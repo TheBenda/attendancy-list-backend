@@ -14,10 +14,8 @@ namespace ALB.Application.UseCases.Auths;
 
 public sealed class TokenProvider(UserManager<ApplicationUser> userManager, IRefreshTokenRepository refreshTokenRepository, IOptions<JwtOptions> options)
 {
-    public async Task<string> Create(ApplicationUser user)
+    public async Task<string> Create(ApplicationUser user, IList<string> roles)
     {
-        var roles = await userManager.GetRolesAsync(user);
-
         var signingKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(options.Value.Secret));
         var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);

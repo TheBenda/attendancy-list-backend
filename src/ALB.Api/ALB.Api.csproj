@@ -1,20 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
+        <!-- Configure build-time OpenAPI generation to produce an OpenAPI 3.1 document -->
+        <OpenApiGenerateDocumentsOptions>--openapi-version OpenApi3_1 --file-name alb_openapi</OpenApiGenerateDocumentsOptions>
+        <OpenApiGenerateDocumentsOnBuild>false</OpenApiGenerateDocumentsOnBuild>
+        <OpenApiDocumentsDirectory>.</OpenApiDocumentsDirectory>
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Npgsql"/>
-        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"/>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore"/>
+        <PackageReference Include="Aspire.Npgsql" />
+        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.ApiDescription.Server">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="NodaTime.Serialization.SystemTextJson" />
         <PackageReference Include="Scalar.AspNetCore" />
@@ -22,10 +30,14 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\aspire\ALB.ServiceDefaults\ALB.ServiceDefaults.csproj"/>
+        <ProjectReference Include="..\..\..\attendancy-list-host\aspire\ALB.ServiceDefaults\ALB.ServiceDefaults.csproj" />
         <ProjectReference Include="..\ALB.Application\ALB.Application.csproj" />
-        <ProjectReference Include="..\ALB.Domain\ALB.Domain.csproj"/>
-        <ProjectReference Include="..\ALB.Infrastructure\ALB.Infrastructure.csproj"/>
+        <ProjectReference Include="..\ALB.Domain\ALB.Domain.csproj" />
+        <ProjectReference Include="..\ALB.Infrastructure\ALB.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Extensions\" />
     </ItemGroup>
 
 </Project>

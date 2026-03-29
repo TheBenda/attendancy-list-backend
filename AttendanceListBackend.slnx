@@ -3,16 +3,13 @@
     <File Path="Directory.Packages.props" />
   </Folder>
   <Folder Name="/aspire/">
-    <Project Path="aspire/ALB.AppHost/ALB.AppHost.csproj" />
-    <Project Path="aspire/ALB.MigrationService/ALB.MigrationService.csproj" />
-    <Project Path="aspire/ALB.ServiceDefaults/ALB.ServiceDefaults.csproj" />
+    <Project Path="../attendancy-list-host/aspire/ALB.ServiceDefaults/ALB.ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/ALB.Api/ALB.Api.csproj" />
     <Project Path="src/ALB.Application/ALB.Application.csproj" />
     <Project Path="src/ALB.Domain/ALB.Domain.csproj" />
     <Project Path="src/ALB.Infrastructure/ALB.Infrastructure.csproj" />
-    <Project Path="src/ALB.Ui/ALB.Ui.csproj" />
   </Folder>
   <Folder Name="/test/">
     <Project Path="tests/ApiIntegrationTests/ApiIntegrationTests/ApiIntegrationTests.csproj" />

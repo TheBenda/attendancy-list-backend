@@ -1,5 +1,4 @@
 using ALB.Api.Endpoints.Users.Mappers;
-using ALB.Api.Extensions;
 using ALB.Api.Models;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
@@ -15,11 +14,11 @@ internal static class GetUsersEndpoint
     {
         routeBuilder.MapGet("/", async (UserManager<ApplicationUser> userManager, CancellationToken ct) =>
         {
-            var userDtos = await userManager.Users.Select(u => u.ToDto()).ToListAsync(ct);
+            var userDtos = await userManager.Users.Select(u => u.ToDto(new List<string>())).ToListAsync(ct);
 
             return Results.Ok(userDtos.ToResponse());
         }).WithName("GetUsers")
-            .WithOpenApi()
+        .Produces<GetUsersResponse>()
             .RequireAuthorization(SystemRoles.AdminPolicy);
 
         return routeBuilder;

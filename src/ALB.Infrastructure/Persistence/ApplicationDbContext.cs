@@ -330,7 +330,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
 
         modelBuilder.Entity<RefreshToken>(b =>
         {
-            b.HasKey(p => p.UserId);
+            b.HasKey(p => p.Id);
             b.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
             b.HasOne(ut => ut.User)
                 .WithMany(t => t.RefreshTokens)

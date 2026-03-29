@@ -11,4 +11,6 @@ public static class SystemRoles
     public const string CoAdminPolicy = "CoAdminOnly";
     public const string TeamPolicy = "TeamOnly";
     public const string ParentPolicy = "ParentOnly";
+    
+    public static readonly string[] Roles = [Admin, CoAdmin, Team, Parent];
 }

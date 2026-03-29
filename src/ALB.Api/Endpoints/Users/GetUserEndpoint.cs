@@ -1,4 +1,4 @@
-using ALB.Api.Extensions;
+using ALB.Api.Endpoints.Users.Mappers;
 using ALB.Api.Models;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
@@ -11,7 +11,7 @@ internal static class GetUserEndpoint
 {
     internal static IEndpointRouteBuilder MapGetUserEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
-        routeBuilder.MapGet("/{userId:guid}", async (Guid userId, UserManager<ApplicationUser> userManager, CancellationToken ct) =>
+        routeBuilder.MapGet("/{userId:guid}", async (Guid userId, UserManager<ApplicationUser> userManager) =>
         {
             var user = await userManager.FindByIdAsync(userId.ToString());
 
@@ -19,12 +19,14 @@ internal static class GetUserEndpoint
             {
                 return Results.NotFound();
             }
+            
+            var userRoles = await userManager.GetRolesAsync(user);
 
-            var response = new GetUserResponse(user.ToDto());
+            var response = new GetUserResponse(user.ToDto(userRoles));
 
             return Results.Ok(response);
         }).WithName("GetUser")
-        .WithOpenApi()
+        .Produces<GetUserResponse>()
         .RequireAuthorization(SystemRoles.AdminPolicy);
 
         return routeBuilder;

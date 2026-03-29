@@ -41,4 +41,9 @@ public class RefreshTokenRepository(ApplicationDbContext context) : IRefreshToke
 
         return newTokenValue;
     }
+
+    public Task DeleteAsync(string token, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
 }

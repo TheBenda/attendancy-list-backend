@@ -81,8 +81,8 @@ public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
             await this.UserManager.AddToRoleAsync(parent, SystemRoles.Parent);
         }
 
-        AdminToken = await TokenProvider.Create(await this.UserManager.FindByEmailAsync(AdminEmail) ?? throw new InvalidOperationException());
-        ParentToken = await TokenProvider.Create(await this.UserManager.FindByEmailAsync(ParentEmail) ?? throw new InvalidOperationException());
+        AdminToken = await TokenProvider.Create(await this.UserManager.FindByEmailAsync(AdminEmail) ?? throw new InvalidOperationException(), new List<string>{SystemRoles.Admin});
+        ParentToken = await TokenProvider.Create(await this.UserManager.FindByEmailAsync(ParentEmail) ?? throw new InvalidOperationException(), new List<string>{SystemRoles.Parent});
     }
 
     private HttpClient GetHttpClient(string token)

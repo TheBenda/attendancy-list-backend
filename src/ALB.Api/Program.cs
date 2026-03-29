@@ -11,6 +11,7 @@ using ALB.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.OpenApi;
 
 using Npgsql;
 
@@ -29,6 +30,25 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.ForwardedHeaders =
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
+
+var viteAppUrl = builder.Configuration
+    .GetRequiredSection("VITE_APP_HTTP")
+    .Value;
+
+const string viteAppCorsPolicy = "ViteAppCorsPolicy";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(viteAppCorsPolicy,
+        pb =>
+        {
+            pb.WithOrigins(viteAppUrl ?? throw new InvalidOperationException("Url to VITE_APP_HTTP not set in environment variables."))
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
+        });
+});
+
 
 
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -49,7 +69,27 @@ builder.Services.AddProblemDetails(options =>
 
 builder.Services.AddExceptionHandler<ProblemExceptionHandler>();
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1;
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Info.Version = "10.0";
+        document.Info.Title = "Attendancy List Api .NET 10 API";
+        document.Info.Description = "Rest API Definition for Attendancy List";
+        document.Info.Contact = new OpenApiContact
+        {
+            Name = "André Benda",
+            Email = "andre.benda@jambit.com"
+        };
+        document.Info.License = new OpenApiLicense
+        {
+            Name = "MIT License",
+            Url = new Uri("https://opensource.org/licenses/MIT")
+        };
+        return Task.CompletedTask;
+    });
+});
 
 //TODO: Implement new EmailSender and remove DummyEmailSender
 builder.Services.AddTransient<IEmailSender<ApplicationUser>, DummyEmailSender>();
@@ -64,6 +104,7 @@ builder.Services
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseCors(viteAppCorsPolicy);
 app.UseExceptionHandler("/Error");
 app.UseForwardedHeaders();
 app.UseAuthentication();
