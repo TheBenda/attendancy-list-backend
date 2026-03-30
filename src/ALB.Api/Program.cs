@@ -31,24 +31,25 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
 
-var viteAppUrl = builder.Configuration
-    .GetRequiredSection("VITE_APP_HTTP")
-    .Value;
-
 const string viteAppCorsPolicy = "ViteAppCorsPolicy";
-
-builder.Services.AddCors(options =>
+if (builder.Environment.EnvironmentName != "Test")
 {
-    options.AddPolicy(viteAppCorsPolicy,
-        pb =>
-        {
-            pb.WithOrigins(viteAppUrl ?? throw new InvalidOperationException("Url to VITE_APP_HTTP not set in environment variables."))
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials();
-        });
-});
+    var viteAppUrl = builder.Configuration
+        .GetRequiredSection("VITE_APP_HTTP")
+        .Value;
 
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(viteAppCorsPolicy,
+            pb =>
+            {
+                pb.WithOrigins(viteAppUrl ?? throw new InvalidOperationException("Url to VITE_APP_HTTP not set in environment variables."))
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            });
+    });
+}
 
 
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -104,7 +105,8 @@ builder.Services
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-app.UseCors(viteAppCorsPolicy);
+if (builder.Environment.EnvironmentName != "Test")
+    app.UseCors(viteAppCorsPolicy);
 app.UseExceptionHandler("/Error");
 app.UseForwardedHeaders();
 app.UseAuthentication();
@@ -119,7 +121,6 @@ app.MapScalarApiReference("/api-reference", options =>
 
 app.MapEndpoints();
 app.MapGet("/me", (ClaimsPrincipal claims) => Results.Ok(claims.Claims.ToDictionary(c => c.Type, c => c.Value)))
-    .WithOpenApi()
     .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
 
 app.MapIdentityApiFilterable<ApplicationUser>(new IdentityApiEndpointRouteBuilderOptions
