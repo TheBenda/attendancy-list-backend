@@ -30,7 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\attendancy-list-host\aspire\ALB.ServiceDefaults\ALB.ServiceDefaults.csproj" />
+        <ProjectReference Include="..\..\aspire\ServiceDefaults\ServiceDefaults.csproj" />
         <ProjectReference Include="..\ALB.Application\ALB.Application.csproj" />
         <ProjectReference Include="..\ALB.Domain\ALB.Domain.csproj" />
         <ProjectReference Include="..\ALB.Infrastructure\ALB.Infrastructure.csproj" />

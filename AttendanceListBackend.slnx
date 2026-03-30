@@ -3,7 +3,7 @@
     <File Path="Directory.Packages.props" />
   </Folder>
   <Folder Name="/aspire/">
-    <Project Path="../attendancy-list-host/aspire/ALB.ServiceDefaults/ALB.ServiceDefaults.csproj" />
+    <Project Path="aspire/ServiceDefaults/ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/ALB.Api/ALB.Api.csproj" />
