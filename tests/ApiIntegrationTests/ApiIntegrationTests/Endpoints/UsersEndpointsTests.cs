@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 
+using ALB.Api.Endpoints.Authentication.Login;
 using ALB.Api.Endpoints.Users;
 using ALB.Api.Endpoints.Users.Roles;
 using ALB.Domain.Values;
@@ -10,6 +11,21 @@ namespace ApiIntegrationTests.Endpoints;
 [ClassDataSource<BaseIntegrationTest>(Shared = SharedType.PerAssembly)]
 public class UsersEndpointsTests(BaseIntegrationTest baseIntegrationTest)
 {
+
+    [Test]
+    public async Task Should_Login_User_Successfully()
+    {
+        var response = 
+            await baseIntegrationTest.GetAdminClient()
+                .PostAsJsonAsync("api/auth/login", 
+                    new LoginRequest(BaseIntegrationTest.AdminEmail, BaseIntegrationTest.AdminPassword));
+        
+        response.EnsureSuccessStatusCode();
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        await Assert.That(loginResponse).IsNotNull();
+        await Assert.That(loginResponse.AccessToken).IsNotNull();
+        await Assert.That(loginResponse.RefreshToken).IsNotNull();
+    }
 
     [Test]
     public async Task Should_Create_User_Successfully()
