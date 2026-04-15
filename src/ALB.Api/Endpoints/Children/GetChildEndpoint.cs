@@ -1,3 +1,4 @@
+using ALB.Domain.Entities;
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
 
@@ -7,7 +8,7 @@ namespace ALB.Api.Endpoints.Children;
 
 internal static class GetChildEndpoint
 {
-    internal static RouteGroupBuilder AddGetChildEndpoint(this RouteGroupBuilder builder)
+    internal static IEndpointRouteBuilder AddGetChildEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapGet("/{childId:guid}", async (Guid childId, IChildRepository childRepository) =>
         {
@@ -27,7 +28,6 @@ internal static class GetChildEndpoint
 
             return Results.Ok(response);
         }).WithName("GetChild")
-            .WithOpenApi()
             .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
 
         return builder;

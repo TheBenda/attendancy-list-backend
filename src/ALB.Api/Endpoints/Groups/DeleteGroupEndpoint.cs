@@ -11,7 +11,6 @@ internal static class DeleteGroupEndpoint
             async (Guid groupId, IGroupRepository groupRepository, CancellationToken ct) =>
                 await groupRepository.DeleteAsync(groupId)
         ).WithName("DeleteGroup")
-        .WithOpenApi()
         .RequireAuthorization(SystemRoles.AdminPolicy);
 
         return routeBuilder;

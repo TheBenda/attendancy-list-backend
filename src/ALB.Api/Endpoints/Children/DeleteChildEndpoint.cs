@@ -5,7 +5,7 @@ namespace ALB.Api.Endpoints.Children;
 
 internal static class DeleteChildEndpoint
 {
-    internal static RouteGroupBuilder AddDeleteChildEndpoint(this RouteGroupBuilder builder)
+    internal static IEndpointRouteBuilder AddDeleteChildEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapDelete("/{childId:guid}", async (Guid childId, IChildRepository childRepository) =>
         {

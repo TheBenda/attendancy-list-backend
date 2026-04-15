@@ -12,10 +12,10 @@ public class Child
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
     public LocalDate DateOfBirth { get; set; }
-    public Guid? GroupId { get; set; }
+    public Guid? CurrentGroupId { get; set; }
     public ICollection<ApplicationUser> Guardians { get; set; } = new List<ApplicationUser>();
 
-    public Group? Group { get; set; } = null!;
+    public Group? CurrentGroup { get; set; } = null!;
 
     public ICollection<AttendanceListEntry> AttendanceListEntries { get; set; } = new List<AttendanceListEntry>();
 

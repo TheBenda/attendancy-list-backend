@@ -16,7 +16,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
 
     }
 
+    public DbSet<ApplicationUser> ApplicationUsers { get; set; }
     public DbSet<AbsenceDay> AbsenceDays { get; set; }
+    public DbSet<AcademicYear> AcademicYears { get; set; }
+    public DbSet<AllowedGroupname> AllowedGroupnames { get; set; }
     public DbSet<AttendanceList> AttendanceLists { get; set; }
     public DbSet<AttendanceListEntry> AttendanceListEntries { get; set; }
     public DbSet<AttendanceListWriter> AttendanceListWriters { get; set; }
@@ -155,9 +158,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             e.HasKey(c => c.Id);
             e.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
 
-            e.HasOne(c => c.Group)
+            e.HasOne(c => c.CurrentGroup)
                 .WithMany(g => g.Children)
-                .HasForeignKey(c => c.GroupId);
+                .HasForeignKey(c => c.CurrentGroupId);
 
             e.HasMany(c => c.AttendanceListEntries)
                 .WithOne(ale => ale.Child)
@@ -182,6 +185,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
                 .HasColumnType("date");
         });
 
+        /*
         modelBuilder.Entity<Cohort>(e =>
         {
             e.HasKey(g => g.Id);
@@ -202,27 +206,58 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             e.Property(g => g.CreationYear)
                 .IsRequired();
         });
+        */
+
+        modelBuilder.Entity<AcademicYear>(e =>
+        {
+            e.HasKey(g => g.Id);
+            e.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
+            
+            e.Property(a => a.StartDate)
+                .IsRequired();
+            
+            e.Property(a => a.EndDate)
+                .IsRequired();
+            
+            e.HasIndex(a => new { a.StartDate, a.EndDate }).IsUnique();
+        });
+        
+        modelBuilder.Entity<AllowedGroupname>(e =>
+        {
+            e.HasKey(g => g.Id);
+            e.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
+
+            e.Property(g => g.Groupname)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            e.HasIndex(g => g.Groupname).IsUnique();
+        });
 
         modelBuilder.Entity<Group>(e =>
         {
             e.HasKey(g => g.Id);
             e.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
+            
+            e.HasOne(gn => gn.Groupname)
+                .WithMany()
+                .HasForeignKey(g => g.GroupnameId);
+            
+            e.HasOne(ay => ay.AcademicYear)
+                .WithMany()
+                .HasForeignKey(g => g.AcademicYearId);
 
             e.HasOne(g => g.ResponsibleUser)
                 .WithMany(u => u.ResponsibleGroups)
                 .HasForeignKey(g => g.ResponsibleUserId);
 
             e.HasMany(g => g.Children)
-                .WithOne(c => c.Group)
-                .HasForeignKey(c => c.GroupId);
+                .WithOne(c => c.CurrentGroup)
+                .HasForeignKey(c => c.CurrentGroupId);
 
             e.HasMany(g => g.UserGroups)
                 .WithOne(ug => ug.Group)
                 .HasForeignKey(ug => ug.GroupId);
-
-            e.HasMany(g => g.Cohorts)
-                .WithOne(gr => gr.Group)
-                .HasForeignKey(gr => gr.GroupId);
 
             e.Property(g => g.Name)
                 .IsRequired()
