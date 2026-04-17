@@ -7,6 +7,8 @@ using ALB.Api.Endpoints.Users.Roles;
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
 
+using Microsoft.AspNetCore.WebUtilities;
+
 using NodaTime;
 
 using TUnit.Core.Services;
@@ -72,6 +74,37 @@ public class ChildrenEndpointsTests(BaseIntegrationTest baseIntegrationTest)
         await Assert.That(child.FirstName).IsEqualTo(createChildRequest.FirstName);
         await Assert.That(child.LastName).IsEqualTo(createChildRequest.LastName);
         await Assert.That(child.Guardians).HasCount(1);
+    }
+
+    [Test]
+    public async Task Should_Return_Ok_On_Get_Children_with_no_cursor_and_limit()
+    {
+        var adminClient = baseIntegrationTest.GetAdminClient();
+        var response =
+            await adminClient.GetAsync("api/children");
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+    }
+    
+    [Test]
+    public async Task Should_Return_BadRequest_On_Get_Children_with_no_cursor_and_illegal_limit()
+    {
+        var adminClient = baseIntegrationTest.GetAdminClient();
+        
+        var query1 = new Dictionary<string, string> { { "limit", "0" } };
+        
+        var limit_to_low_url = QueryHelpers.AddQueryString("api/children", query1);
+        
+        var response1 =
+            await adminClient.GetAsync(limit_to_low_url);
+        await Assert.That(response1.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
+        
+        var query2 = new Dictionary<string, string> { { "limit", "200" } };
+        
+        var limit_to_high_url = QueryHelpers.AddQueryString("api/children", query1);
+        
+        var response2 =
+            await adminClient.GetAsync(limit_to_high_url);
+        await Assert.That(response2.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
     }
 
     [Test]

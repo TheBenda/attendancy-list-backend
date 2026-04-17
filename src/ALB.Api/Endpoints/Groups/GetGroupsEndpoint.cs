@@ -15,7 +15,7 @@ public static class GetGroupsEndpoint
                     .ToList();
                 return Results.Ok(new GetGroupsResponse(groupDtos));
             }).WithName("GetGroups")
-            .Produces<List<GetGroupsResponse>>()
+            .Produces<GetGroupsResponse>()
             .RequireAuthorization(SystemRoles.AdminPolicy);
     
             return routeBuilder;

@@ -2,7 +2,7 @@ using ALB.Domain.Entities;
 using ALB.Domain.Identity;
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
-using ServiceDefaults.Activities;
+//using ServiceDefaults.Activities;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +27,7 @@ public class ChildRepository(ApplicationDbContext dbContext, UserManager<Applica
 
     public async Task<Child> AddGuardiansToChildAsync(Guid childId, List<Guid> guardianIds, CancellationToken ct)
     {
-        using var activity = ActivitySources.BackendActivitySource.StartActivity("Add Guardians to Child");
+        //using var activity = ActivitySources.BackendActivitySource.StartActivity("Add Guardians to Child");
         var child = await dbContext.Children.FindAsync(childId, ct);
         
         if (child is null) throw new Exception("Child not found");
@@ -38,9 +38,9 @@ public class ChildRepository(ApplicationDbContext dbContext, UserManager<Applica
             if (foundUser is null)
             {
                 var ex = new Exception($"Guardian with id {guardianId} not found");
-                activity?.AddTag("guardian_Id", guardianId.ToString());
-                activity?.AddTag("child_Id", childId.ToString());
-                activity?.AddException(ex);
+                //activity?.AddTag("guardian_Id", guardianId.ToString());
+                //activity?.AddTag("child_Id", childId.ToString());
+                //activity?.AddException(ex);
                 throw ex;
             }
             

@@ -25,7 +25,7 @@ internal static class GetChildrenEndpoint
             
             Guid? nextCursor = hasMore ? children[^1].Id : null;
             
-            children.RemoveAt(children.Count - 1);
+            if (hasMore) children.RemoveAt(children.Count - 1);
             
             var response = new GuidCursorResponse<GetChildResponse>(
                     children.Select(c => c.ToResponse()).ToList(),
