@@ -1,4 +1,6 @@
-﻿using ALB.Domain.Identity;
+﻿using ALB.Domain.Entities;
+using ALB.Domain.Identity;
+using ALB.Domain.Repositories;
 using ALB.Domain.Values;
 
 using Microsoft.AspNetCore.Identity;
@@ -23,6 +25,7 @@ public class PowerUserSeederService(IServiceProvider serviceProvider) : IHostedS
         using var scope = serviceProvider.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+        var groupRepository = scope.ServiceProvider.GetRequiredService<IGroupRepository>();
 
         string[] roleNames = [SystemRoles.Admin, SystemRoles.CoAdmin, SystemRoles.Team, SystemRoles.Parent];
 
@@ -58,6 +61,29 @@ public class PowerUserSeederService(IServiceProvider serviceProvider) : IHostedS
         if (parentUser is null)
         {
             await CreateUser(userManager, DummyParentEmail,"Parent",SystemRoles.Parent);
+        }
+        
+        var academicYears = await groupRepository.GetAcademicYearsAsync(cancellationToken);
+        if (academicYears.Count is 0)
+        {
+            var currentYear = SystemClock.Instance.GetCurrentInstant().InZone(DateTimeZone.Utc).Year;
+            var lowestYear = currentYear - 7;
+            var highestYear = currentYear + 15;
+            
+            var newAcademicYears = new List<AcademicYear>();
+
+            for (int i = lowestYear; i <= highestYear; i++)
+            {
+                var ay = new AcademicYear
+                {
+                    StartDate = new DateOnly(i, 7, 1),
+                    EndDate = new DateOnly(i+1, 6, 30)
+                };
+                
+                newAcademicYears.Add(ay);
+            }
+
+            await groupRepository.CreateAcademicYearsAsync(newAcademicYears, cancellationToken);
         }
     }
 

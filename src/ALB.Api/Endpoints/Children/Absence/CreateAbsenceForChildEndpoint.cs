@@ -8,7 +8,7 @@ namespace ALB.Api.Endpoints.Children.Absence;
 
 internal static class CreateAbsenceForChildEndpoint
 {
-    internal static RouteGroupBuilder AddCreateAbsenceForChildEndpoint(this RouteGroupBuilder builder)
+    internal static IEndpointRouteBuilder AddCreateAbsenceForChildEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapPost("/{childId:guid}/absence", async (Guid childId, CreateAbsenceRequest request, IAbsenceDayRepository absenceRepo) =>
         {

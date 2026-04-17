@@ -8,13 +8,12 @@ public class Group
 {
     public Guid Id { get; set; }
     public required string Name { get; set; }
+    public Guid AcademicYearId { get; init; }
+    public required AcademicYear AcademicYear { get; init; }
+    public Guid GroupnameId { get; init; }
+    public required AllowedGroupname Groupname { get; init; }
     public Guid ResponsibleUserId { get; set; }
-
     public ApplicationUser ResponsibleUser { get; set; } = null!;
-    [JsonIgnore]
     public ICollection<Child> Children { get; set; } = new List<Child>();
-    [JsonIgnore]
-    public ICollection<Cohort> Cohorts { get; set; } = new List<Cohort>();
-    [JsonIgnore]
     public ICollection<UserGroup> UserGroups { get; set; } = new List<UserGroup>();
 }

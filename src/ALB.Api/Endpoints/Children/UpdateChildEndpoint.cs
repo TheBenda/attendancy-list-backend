@@ -7,7 +7,7 @@ namespace ALB.Api.Endpoints.Children;
 
 internal static class UpdateChildEndpoint
 {
-    internal static RouteGroupBuilder AddUpdateChildEndpoint(this RouteGroupBuilder builder)
+    internal static IEndpointRouteBuilder AddUpdateChildEndpoint(this IEndpointRouteBuilder builder)
     {
 
         builder.MapPut("/{childId:guid}", async (Guid childId, UpdateChildRequest request, IChildRepository childRepository) =>

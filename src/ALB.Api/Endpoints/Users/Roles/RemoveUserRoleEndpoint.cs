@@ -10,7 +10,7 @@ internal static class RemoveUserRoleEndpoint
     internal static IEndpointRouteBuilder MapRemoveUserRoleEndpoint(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapDelete("/{userId:guid}/roles",
-            async (Guid userId, RemoveUserRoleRequest request, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, CancellationToken ct) =>
+            async (Guid userId, string role, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, CancellationToken ct) =>
             {
                 var user = await userManager.FindByIdAsync(userId.ToString());
                 if (user is null)
@@ -18,16 +18,16 @@ internal static class RemoveUserRoleEndpoint
                     return Results.NotFound("User not found");
                 }
 
-                var roleExists = await roleManager.RoleExistsAsync(request.Role);
+                var roleExists = await roleManager.RoleExistsAsync(role);
                 if (!roleExists)
                 {
                     return Results.NotFound("Role not found");
                 }
 
-                if (!await userManager.IsInRoleAsync(user, request.Role))
-                    return Results.BadRequest($"User is not in role {request.Role}");
+                if (!await userManager.IsInRoleAsync(user, role))
+                    return Results.BadRequest($"User is not in role {role}");
 
-                var result = await userManager.RemoveFromRoleAsync(user, request.Role);
+                var result = await userManager.RemoveFromRoleAsync(user, role);
                 if (!result.Succeeded)
                 {
                     return Results.InternalServerError(result.Errors);
@@ -35,11 +35,12 @@ internal static class RemoveUserRoleEndpoint
 
                 return Results.NoContent();
             }).WithName("RemoveUserRole")
-            .WithOpenApi()
+            .Produces(204)
+            .ProducesProblem(400)
+            .ProducesProblem(404)
+            .ProducesProblem(500)
             .RequireAuthorization(SystemRoles.AdminPolicy);
 
         return endpoints;
     }
 }
-
-public record RemoveUserRoleRequest(string Role);

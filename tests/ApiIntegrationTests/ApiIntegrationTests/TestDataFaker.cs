@@ -13,7 +13,8 @@ public static class TestDataFaker
         .CustomInstantiator(f => new CreateChildRequest(
             f.Name.FirstName(),
             f.Name.LastName(),
-            LocalDate.FromDateTime(f.Date.Past(10, DateTime.Today))
+            LocalDate.FromDateTime(f.Date.Past(10, DateTime.Today)),
+            []
         ));
 
     public static readonly Faker<CreateUserRequest> UserRequestFaker = new Faker<CreateUserRequest>()

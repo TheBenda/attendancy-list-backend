@@ -14,9 +14,9 @@ public class GroupRepository(ApplicationDbContext dbContext) : IGroupRepository
         return group;
     }
 
-    public async Task<Group?> GetByIdAsync(Guid id)
+    public async Task<Group?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
-        return await dbContext.Groups.FindAsync(id);
+        throw new NotImplementedException();
     }
 
     public async Task UpdateAsync(Group group)
@@ -34,6 +34,36 @@ public class GroupRepository(ApplicationDbContext dbContext) : IGroupRepository
             await dbContext.SaveChangesAsync();
         }
     }
+
+    public async Task<List<Group>> GetAllAsync(CancellationToken ct = default)
+         => await dbContext.Groups.ToListAsync(ct);
+
+    public async Task<List<AcademicYear>> CreateAcademicYearsAsync(List<AcademicYear> academicYears, CancellationToken ct = default)
+    {
+        dbContext.AcademicYears.AddRange(academicYears);
+        await dbContext.SaveChangesAsync(ct);
+        return academicYears;
+    }
+
+    public async Task<List<AcademicYear>> GetAcademicYearsAsync(CancellationToken ct = default)
+        => await dbContext.AcademicYears.ToListAsync(ct);
+
+    public async Task<AcademicYear?> GetAcademicYearByIdAsync(Guid id, CancellationToken ct = default)
+        => await dbContext.AcademicYears.FindAsync(id, ct);
+    
+
+    public async Task<AllowedGroupname> CreateAllowedGroupnameAsync(AllowedGroupname allowedGroupname, CancellationToken ct = default)
+    {
+        dbContext.AllowedGroupnames.Add(allowedGroupname);
+        await dbContext.SaveChangesAsync(ct);
+        return allowedGroupname;
+    }
+
+    public async Task<List<AllowedGroupname>> GetAllAllowedGroupnamesAsync(CancellationToken ct = default)
+        => await dbContext.AllowedGroupnames.ToListAsync(ct);
+
+    public async Task<AllowedGroupname?> GetAllowedGroupnameByIdAsync(Guid id, CancellationToken ct = default)
+        => await dbContext.AllowedGroupnames.FindAsync(id, ct);
 
     public async Task AddChildrenToGroupAsync(Guid groupId, IEnumerable<Guid> childIds, CancellationToken ct)
     {

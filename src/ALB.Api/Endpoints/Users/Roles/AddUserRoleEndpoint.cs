@@ -34,7 +34,9 @@ internal static class AddUserRoleEndpoint
 
             return Results.NoContent();
         }).WithName("AddUserRole")
-        .WithOpenApi()
+        .Produces(204)
+        .ProducesProblem(404)
+        .ProducesProblem(500)
         .RequireAuthorization(SystemRoles.AdminPolicy);
 
         return endpoints;

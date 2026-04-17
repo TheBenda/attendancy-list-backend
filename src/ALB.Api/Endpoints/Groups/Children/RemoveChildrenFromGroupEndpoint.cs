@@ -7,9 +7,9 @@ internal static class RemoveChildrenFromGroupEndpoint
 {
     internal static IEndpointRouteBuilder MapRemoveChildrenFromGroupEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapDelete("/{groupId:guid}/children", async (Guid groupId, RemoveChildFromGroupRequest request, IGroupRepository repository, CancellationToken ct) =>
+        endpoints.MapDelete("/{groupId:guid}/children", async (Guid groupId, List<Guid> ChildIds, IGroupRepository repository, CancellationToken ct) =>
         {
-            await repository.RemoveChildrenFromGroupAsync(groupId, request.ChildIds, ct);
+            await repository.RemoveChildrenFromGroupAsync(groupId, ChildIds, ct);
 
             return Results.NoContent();
         }).WithName("RemoveChildrenFromGroup")
@@ -19,5 +19,3 @@ internal static class RemoveChildrenFromGroupEndpoint
         return endpoints;
     }
 }
-
-public record RemoveChildFromGroupRequest(List<Guid> ChildIds);
