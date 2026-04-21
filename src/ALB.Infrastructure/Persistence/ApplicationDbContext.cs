@@ -25,7 +25,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<AttendanceListWriter> AttendanceListWriters { get; set; }
     public DbSet<AttendanceStatus> AttendanceStatus { get; set; }
     public DbSet<Child> Children { get; set; }
-    public DbSet<Cohort> Cohorts { get; set; }
     public DbSet<Group> Groups { get; set; }
     public DbSet<Grade> Grades { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
@@ -80,10 +79,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             e.HasMany(al => al.Writers)
                 .WithOne(alw => alw.AttendanceList)
                 .HasForeignKey(alw => alw.AttendanceListId);
-
-            e.HasOne(al => al.Cohort)
-                .WithMany(g => g.AttendanceLists)
-                .HasForeignKey(al => al.CohortId);
 
             /*
             e.Property(al => al.ValidationPeriod)
@@ -184,29 +179,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             e.Property(c => c.DateOfBirth)
                 .HasColumnType("date");
         });
-
-        /*
-        modelBuilder.Entity<Cohort>(e =>
-        {
-            e.HasKey(g => g.Id);
-            e.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
-
-            e.HasOne(g => g.Group)
-                .WithMany(gr => gr.Cohorts)
-                .HasForeignKey(g => g.GroupId);
-
-            e.HasOne(x => x.Grade)
-                .WithOne(x => x.Cohort)
-                .HasForeignKey<Cohort>(x => x.GradeId);
-
-            e.HasMany(g => g.AttendanceLists)
-                .WithOne(al => al.Cohort)
-                .HasForeignKey(al => al.CohortId);
-
-            e.Property(g => g.CreationYear)
-                .IsRequired();
-        });
-        */
 
         modelBuilder.Entity<AcademicYear>(e =>
         {

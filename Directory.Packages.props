@@ -2,9 +2,10 @@
   <!-- See https://aka.ms/dotnet/msbuild/customize for more details on customizing your build -->
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-      <MicrosoftDefaultVersion>10.0.5</MicrosoftDefaultVersion>
-      <OpenTelemetryVersion>1.15.0</OpenTelemetryVersion>
-      <AspireVersion>13.2.0</AspireVersion>
+    <MicrosoftDefaultVersion>10.0.5</MicrosoftDefaultVersion>
+    <OpenTelemetryVersion>1.15.0</OpenTelemetryVersion>
+    <AspireVersion>13.2.0</AspireVersion>
+    <NodaTimeVersion>3.3.1</NodaTimeVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Aspire.Npgsql" Version="$(AspireVersion)" />
@@ -32,8 +33,9 @@
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftDefaultVersion)" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.2.0" />
     <PackageVersion Include="MudBlazor" Version="8.15.0" />
-    <PackageVersion Include="NodaTime" Version="3.2.2" />
+    <PackageVersion Include="NodaTime" Version="$(NodaTimeVersion)" />
     <PackageVersion Include="NodaTime.Serialization.SystemTextJson" Version="1.3.0" />
+    <PackageVersion Include="NodaTime.Testing" Version="$(NodaTimeVersion)" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime" Version="10.0.0" />
     <PackageVersion Include="Npgsql.OpenTelemetry" Version="10.0.2" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="$(OpenTelemetryVersion)" />
@@ -46,9 +48,6 @@
     <PackageVersion Include="Scalar.AspNetCore" Version="2.10.3" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.8.1" />
-    <PackageVersion Include="TickerQ" Version="10.0.0-beta.17" />
-    <PackageVersion Include="TickerQ.Dashboard" Version="10.0.0-beta.17" />
-    <PackageVersion Include="TickerQ.EntityFrameworkCore" Version="10.0.0-beta.17" />
     <PackageVersion Include="TUnit" Version="1.2.3" />
   </ItemGroup>
 </Project>

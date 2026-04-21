@@ -89,7 +89,7 @@ public static class ApplicationExtension
                 options.SignIn.RequireConfirmedEmail = false;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.SignIn.RequireConfirmedAccount = false;
-                options.Stores.SchemaVersion = IdentitySchemaVersions.Version2;
+                options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
             })
             .AddRoles<ApplicationRole>()
             .AddSignInManager<SignInManager<ApplicationUser>>()

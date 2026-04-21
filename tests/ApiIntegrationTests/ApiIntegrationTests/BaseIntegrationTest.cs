@@ -9,16 +9,21 @@ using ALB.Domain.Values;
 using ALB.Infrastructure.Persistence;
 using ALB.Infrastructure.Services;
 
+using Aspire.Npgsql;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
+using Npgsql;
 
 using Testcontainers.PostgreSql;
 
@@ -60,8 +65,8 @@ public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
         using var serviceScope = _webApplicationFactory.Services.CreateScope();
 
         var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        // await context.Database.MigrateAsync();
-        await context.Database.EnsureCreatedAsync();
+        await context.Database.MigrateAsync();
+        // await context.Database.EnsureCreatedAsync();
 
         var seeder = new PowerUserSeederService(serviceScope.ServiceProvider);
         await seeder.StartAsync(CancellationToken.None);
@@ -200,10 +205,13 @@ file sealed class TestWebApplicationFactory(string connectionString)
         {
             var inMemorySettings = new Dictionary<string, string?>
             {
-                { "ConnectionStrings:DefaultConnection", connectionString }
+                { "ConnectionStrings:DefaultConnection", connectionString },
+                { "ConnectionStrings:postgresdb", connectionString }
             };
             configBuilder.AddInMemoryCollection(inMemorySettings);
         });
+
+        builder.UseSetting("ConnectionStrings:postgresdb", connectionString);
 
         builder.ConfigureServices(services =>
         {
@@ -221,9 +229,18 @@ file sealed class TestWebApplicationFactory(string connectionString)
             if (powerUserSeederDescriptor is not null)
                 services.Remove(powerUserSeederDescriptor);
 
-            services.AddDbContextPool<ApplicationDbContext>((container, options) =>
+
+            services.AddNpgsqlDataSource(connectionString,
+                configureDataSourceBuilder: sourceBuilder => sourceBuilder.UseNodaTime());
+
+            // TODO: fix PendingModelChangesWarning for Integration Tests
+            services.AddDbContextPool<ApplicationDbContext>((serviceProvider, options) =>
             {
-                options.UseNpgsql(connectionString, npgsqlOptions => npgsqlOptions.UseNodaTime());
+                var dataSource = serviceProvider.GetRequiredService<NpgsqlDataSource>();
+                options.UseNpgsql(dataSource, npgsqlOptions =>
+                    npgsqlOptions.UseNodaTime());
+                
+                options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
             });
 
             services.AddAuthentication("TestScheme")
@@ -235,5 +252,40 @@ file sealed class TestWebApplicationFactory(string connectionString)
                 .AddPolicy(SystemRoles.TeamPolicy, x => x.RequireRole(SystemRoles.Team))
                 .AddPolicy(SystemRoles.ParentPolicy, x => x.RequireRole(SystemRoles.Parent));
         });
+    }
+}
+
+internal static class TestWebApplicationFactoryExtensions
+{
+    internal static IServiceCollection AddNpgsqlDataSource(
+        this IServiceCollection services,
+        string connectionString,
+        Action<NpgsqlSettings>? configureSettings = null,
+        Action<NpgsqlDataSourceBuilder>? configureDataSourceBuilder = null)
+    {
+        return AddNpgsqlDataSource(services, configureSettings, connectionString, null, configureDataSourceBuilder);
+    }
+    
+    private static IServiceCollection AddNpgsqlDataSource(
+        IServiceCollection services,
+        Action<NpgsqlSettings>? configureSettings,
+        string connectionString,
+        object? serviceKey,
+        Action<NpgsqlDataSourceBuilder>? configureDataSourceBuilder)
+    {
+        NpgsqlSettings npgsqlSettings = new ();
+        npgsqlSettings.ConnectionString = connectionString;
+        if (configureSettings != null)
+            configureSettings(npgsqlSettings);
+    
+        services.AddNpgsqlDataSource(connectionString, (dataSourceBuilder =>
+        {
+            Action<NpgsqlDataSourceBuilder> action = configureDataSourceBuilder;
+            if (action == null)
+                return;
+            action(dataSourceBuilder);
+        }), serviceKey: serviceKey);
+
+        return services;
     }
 }

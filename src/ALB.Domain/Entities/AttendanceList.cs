@@ -8,10 +8,10 @@ public class AttendanceList
 {
     public Guid Id { get; set; }
     public bool Open { get; set; } = true;
-    public Guid CohortId { get; set; }
+    public Guid GroupId { get; set; }
     public required DateInterval ValidationPeriod { get; set; }
 
-    public Cohort Cohort { get; set; } = null!;
+    public Group Group { get; set; } = null!;
     [JsonIgnore]
     public ICollection<AttendanceListEntry> AttendanceListEntries { get; set; } = new List<AttendanceListEntry>();
     [JsonIgnore]

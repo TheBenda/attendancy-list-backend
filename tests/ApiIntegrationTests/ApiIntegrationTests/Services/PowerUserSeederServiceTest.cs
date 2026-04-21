@@ -1,6 +1,8 @@
 ﻿using ALB.Domain.Identity;
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
+using ALB.Infrastructure.Persistence;
+using ALB.Infrastructure.Utils;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;

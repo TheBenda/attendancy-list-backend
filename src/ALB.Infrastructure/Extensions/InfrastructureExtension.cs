@@ -12,33 +12,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Npgsql;
 
-using TickerQ.DependencyInjection;
-
 namespace ALB.Infrastructure.Extensions;
 
 public static class InfrastructureExtension
 {
     public static IServiceCollection AddCronJobs(this IServiceCollection services)
     {
-        services.AddTickerQ(options =>
-        {
-            /*
-            options.AddOperationalStore<ApplicationDbContext>(efOptions =>
-            {
-                efOptions.UseModelCustomizerForMigrations();
-                efOptions.CancelMissedTickersOnAppStart();
-            });
-
-            options.SetInstanceIdentifier("TickerQ");
-
-            options.AddDashboard(dashboardOptions =>
-            {
-                dashboardOptions.EnableBuiltInAuth = true;
-                dashboardOptions.EnableBasicAuth = true;
-            });
-            */
-        });
-
         return services;
     }
 
@@ -50,7 +29,6 @@ public static class InfrastructureExtension
         services.AddScoped<IGroupRepository, GroupRepository>();
         services.AddScoped<IAttendanceRepository, AttendanceRepository>();
         services.AddScoped<IAbsenceDayRepository, AbsenceDayRepository>();
-        services.AddScoped<ICohortRepository, CohortRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
         services.AddDbContextPool<ApplicationDbContext>((serviceProvider, options) =>
