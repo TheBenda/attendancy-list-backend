@@ -1,5 +1,4 @@
 using ALB.Api.Endpoints.Groups.Children;
-using ALB.Api.Endpoints.Groups.Cohorts;
 
 namespace ALB.Api.Endpoints.Groups;
 
@@ -13,7 +12,6 @@ internal static class GroupsEndpointsGroup
             .MapAddChildrenToGroupEndpoint()
             .MapGetGroupsEndpoint()
             //.MapRemoveChildrenFromGroupEndpoint()
-            .MapCreateCohortEndpoint()
             .MapCreateGroupEndpoint()
             .MapDeleteGroupEndpoint()
             .MapUpdateGroupEndpoint()

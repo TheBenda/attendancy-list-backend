@@ -11,27 +11,8 @@ internal static class GetAttendancePageEndpoint
     {
         builder.MapPost("/attendancelists/{attendanceListId:guid}/page", async (Guid attendanceListId, GetAttendancePageRequest request, IAttendanceRepository attendanceListRepo, IChildRepository childRepo, IAbsenceDayRepository absenceRepo) =>
         {
-            var attendanceList = await attendanceListRepo.GetAttendanceListByIdAsync(attendanceListId);
-
-            if (attendanceList is null)
-            {
-                return Results.NotFound();
-            }
-
-            var children = await childRepo.GetByCohortAsync(attendanceList.CohortId);
-
-            var absences = await absenceRepo.GetByDateAsync(request.date);
-
-            var dtos = children.Select(child =>
-            {
-                var absence = absences.FirstOrDefault(a => a.ChildId == child.Id);
-                var status = absence?.AbsenceStatus.Name;
-                return new AttendancePageChildDto(child.Id, child.FirstName, child.LastName, status);
-            }).ToList();
-
-            return Results.Ok(new GetAttendancePageResponse(dtos));
+            return Results.InternalServerError();
         }).WithName("GetAttendancePage")
-            .WithOpenApi()
             .RequireAuthorization(SystemRoles.TeamPolicy);
         return builder;
     }
