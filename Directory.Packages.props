@@ -2,7 +2,7 @@
   <!-- See https://aka.ms/dotnet/msbuild/customize for more details on customizing your build -->
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <MicrosoftDefaultVersion>10.0.5</MicrosoftDefaultVersion>
+    <MicrosoftDefaultVersion>10.0.7</MicrosoftDefaultVersion>
     <OpenTelemetryVersion>1.15.0</OpenTelemetryVersion>
     <AspireVersion>13.2.0</AspireVersion>
     <NodaTimeVersion>3.3.1</NodaTimeVersion>
