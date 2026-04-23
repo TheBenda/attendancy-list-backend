@@ -17,6 +17,7 @@ internal static class LogoutEndpoint
                     await signInManager.SignOutAsync();
                     return Results.Ok(new LogoutResponse("Successfully logged out", DateTime.UtcNow));
                 }
+
                 return Results.Unauthorized();
             })
             .WithOpenApi()

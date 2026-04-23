@@ -9,23 +9,23 @@ internal static class UpdateChildEndpoint
 {
     internal static IEndpointRouteBuilder AddUpdateChildEndpoint(this IEndpointRouteBuilder builder)
     {
+        builder.MapPut("/{childId:guid}",
+                async (Guid childId, UpdateChildRequest request, IChildRepository childRepository) =>
+                {
+                    var existingChild = await childRepository.GetByIdAsync(childId);
+                    if (existingChild is null)
+                    {
+                        return Results.NotFound();
+                    }
 
-        builder.MapPut("/{childId:guid}", async (Guid childId, UpdateChildRequest request, IChildRepository childRepository) =>
-        {
-            var existingChild = await childRepository.GetByIdAsync(childId);
-            if (existingChild is null)
-            {
-                return Results.NotFound();
-            }
+                    existingChild.FirstName = request.ChildFirstName;
+                    existingChild.LastName = request.ChildLastName;
+                    existingChild.DateOfBirth = request.ChildDateOfBirth;
 
-            existingChild.FirstName = request.ChildFirstName;
-            existingChild.LastName = request.ChildLastName;
-            existingChild.DateOfBirth = request.ChildDateOfBirth;
+                    await childRepository.UpdateAsync(existingChild);
 
-            await childRepository.UpdateAsync(existingChild);
-
-            return Results.NoContent();
-        }).WithName("UpdateChild")
+                    return Results.NoContent();
+                }).WithName("UpdateChild")
             .WithOpenApi()
             .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
         return builder;

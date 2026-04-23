@@ -12,7 +12,8 @@ public class ProblemExceptionHandler : IExceptionHandler
         _problemDetailsService = problemDetailsService;
     }
 
-    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
+    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception,
+        CancellationToken cancellationToken)
     {
         var problemDetails = new ProblemDetails
         {
@@ -24,8 +25,7 @@ public class ProblemExceptionHandler : IExceptionHandler
 
         return await _problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
-            HttpContext = httpContext,
-            ProblemDetails = problemDetails
+            HttpContext = httpContext, ProblemDetails = problemDetails
         });
     }
 }

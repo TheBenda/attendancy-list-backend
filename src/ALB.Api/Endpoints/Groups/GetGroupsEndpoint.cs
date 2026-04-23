@@ -8,15 +8,15 @@ public static class GetGroupsEndpoint
     internal static IEndpointRouteBuilder MapGetGroupsEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
         routeBuilder.MapGet("/", async (IGroupRepository groupRepository, CancellationToken ct) =>
-        {
-            var groups = await groupRepository.GetAllAsync(ct);
-            var groupDtos = groups.Select(g =>
-                    new GetGroupResponse(g.Id, g.Name))
-                .ToList();
-            return Results.Ok(new GetGroupsResponse(groupDtos));
-        }).WithName("GetGroups")
-        .Produces<GetGroupsResponse>()
-        .RequireAuthorization(SystemRoles.AdminPolicy);
+            {
+                var groups = await groupRepository.GetAllAsync(ct);
+                var groupDtos = groups.Select(g =>
+                        new GetGroupResponse(g.Id, g.Name))
+                    .ToList();
+                return Results.Ok(new GetGroupsResponse(groupDtos));
+            }).WithName("GetGroups")
+            .Produces<GetGroupsResponse>()
+            .RequireAuthorization(SystemRoles.AdminPolicy);
 
         return routeBuilder;
     }

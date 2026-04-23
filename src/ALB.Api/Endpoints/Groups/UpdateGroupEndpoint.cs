@@ -7,7 +7,9 @@ internal static class UpdateGroupEndpoint
 {
     internal static IEndpointRouteBuilder MapUpdateGroupEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
-        routeBuilder.MapPut("/", async (UpdateGroupRequest request, IGroupRepository groupRepository, CancellationToken cancellationToken) =>
+        routeBuilder.MapPut("/",
+                async (UpdateGroupRequest request, IGroupRepository groupRepository,
+                    CancellationToken cancellationToken) =>
                 {
                     throw new NotImplementedException();
                 }

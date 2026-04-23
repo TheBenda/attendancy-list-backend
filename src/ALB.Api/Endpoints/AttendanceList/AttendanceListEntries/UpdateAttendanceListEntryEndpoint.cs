@@ -13,7 +13,8 @@ internal static class UpdateAttendanceListEntryEndpoint
         builder.MapPut("/entries", async (UpdateAttendanceListEntryRequest request, IAttendanceRepository repository) =>
         {
             await repository.UpdateAsync(request.ChildId, LocalDate.FromDateTime(request.Date),
-                request.ArrivalAt.ToNodaLocalTime(), request.DepartureAt.ToNodaLocalTime(), request.Status, CancellationToken.None);
+                request.ArrivalAt.ToNodaLocalTime(), request.DepartureAt.ToNodaLocalTime(), request.Status,
+                CancellationToken.None);
 
             return Results.Ok(new UpdateAttendanceListEntryResponse(
                 $"Attendance for {request.ChildId} at {LocalDate.FromDateTime(request.Date)} was successfully set to {request.Status}"));

@@ -10,26 +10,27 @@ internal static class DeleteUserEndpoint
 {
     internal static IEndpointRouteBuilder MapDeleteUserEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
-        routeBuilder.MapDelete("/{userId:guid}", async (Guid userId, UserManager<ApplicationUser> userManager, CancellationToken ct) =>
-        {
-            var user = await userManager.FindByIdAsync(userId.ToString());
+        routeBuilder.MapDelete("/{userId:guid}",
+                async (Guid userId, UserManager<ApplicationUser> userManager, CancellationToken ct) =>
+                {
+                    var user = await userManager.FindByIdAsync(userId.ToString());
 
-            if (user is null)
-            {
-                return Results.NotFound();
-            }
+                    if (user is null)
+                    {
+                        return Results.NotFound();
+                    }
 
-            var result = await userManager.DeleteAsync(user);
+                    var result = await userManager.DeleteAsync(user);
 
-            if (!result.Succeeded)
-            {
-                return Results.BadRequest(result.Errors.AsErrorString());
-            }
+                    if (!result.Succeeded)
+                    {
+                        return Results.BadRequest(result.Errors.AsErrorString());
+                    }
 
-            return Results.NoContent();
-        }).WithName("DeleteUser")
+                    return Results.NoContent();
+                }).WithName("DeleteUser")
             .WithOpenApi()
-        .RequireAuthorization(SystemRoles.AdminPolicy);
+            .RequireAuthorization(SystemRoles.AdminPolicy);
 
         return routeBuilder;
     }
