@@ -17,6 +17,14 @@ public static class TestDataFaker
             []
         ));
 
+    public static CreateChildRequest CreateChildForGuardians(List<Guid> guids)
+    {
+        var request = ChildRequestFaker.Generate();
+        request.GuardianIds.AddRange(guids);
+
+        return request;
+    }
+
     public static readonly Faker<CreateUserRequest> UserRequestFaker = new Faker<CreateUserRequest>()
         .CustomInstantiator(f => new CreateUserRequest(
             f.Internet.Email(),

@@ -12,24 +12,25 @@ internal static class LoginEndpoint
 {
     internal static IEndpointRouteBuilder MapLoginEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/login", async Task<Results<Ok<LoginResponse>, UnauthorizedHttpResult>> (LoginRequest request, UserManager<ApplicationUser> userManager, TokenProvider tokenProver, CancellationToken ct) =>
-        {
-            var user = await userManager.FindByEmailAsync(request.Email);
-
-            if (user is null || !await userManager.CheckPasswordAsync(user, request.Password))
+        endpoints.MapPost("/login",
+            async Task<Results<Ok<LoginResponse>, UnauthorizedHttpResult>> (LoginRequest request,
+                UserManager<ApplicationUser> userManager, TokenProvider tokenProver, CancellationToken ct) =>
             {
-                return TypedResults.Unauthorized();
-            }
-            
-            var userRoles = await userManager.GetRolesAsync(user);
+                var user = await userManager.FindByEmailAsync(request.Email);
 
-            return TypedResults.Ok(
-                new LoginResponse(
-                    user.ToDto(userRoles),
-                    await tokenProver.Create(user, userRoles),
-                    await tokenProver.GenerateRefreshToken(user, ct)));
+                if (user is null || !await userManager.CheckPasswordAsync(user, request.Password))
+                {
+                    return TypedResults.Unauthorized();
+                }
 
-        }).AddOpenApiOperationTransformer((operation, context, ct) =>
+                var userRoles = await userManager.GetRolesAsync(user);
+
+                return TypedResults.Ok(
+                    new LoginResponse(
+                        user.ToDto(userRoles),
+                        await tokenProver.Create(user, userRoles),
+                        await tokenProver.GenerateRefreshToken(user, ct)));
+            }).AddOpenApiOperationTransformer((operation, context, ct) =>
         {
             operation.Summary = "Login";
             operation.Description = "Login with email and password for JWT authentication.";
@@ -41,4 +42,5 @@ internal static class LoginEndpoint
 }
 
 public record LoginRequest(string Email, string Password);
+
 public record LoginResponse(UserDto user, string AccessToken, string RefreshToken);

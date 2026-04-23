@@ -10,28 +10,29 @@ internal static class CreateUserEndpoint
 {
     internal static IEndpointRouteBuilder MapCreateUserEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/", async (CreateUserRequest request, UserManager<ApplicationUser> userManager, CancellationToken ct) =>
-        {
-            var user = new ApplicationUser
-            {
-                Email = request.Email,
-                UserName = request.Email,
-                FirstName = request.FirstName,
-                LastName = request.LastName
-            };
+        endpoints.MapPost("/",
+                async (CreateUserRequest request, UserManager<ApplicationUser> userManager, CancellationToken ct) =>
+                {
+                    var user = new ApplicationUser
+                    {
+                        Email = request.Email,
+                        UserName = request.Email,
+                        FirstName = request.FirstName,
+                        LastName = request.LastName
+                    };
 
-            var result = await userManager.CreateAsync(user, request.Password);
+                    var result = await userManager.CreateAsync(user, request.Password);
 
-            if (!result.Succeeded)
-            {
-                return Results.BadRequest(result.Errors.AsErrorString());
-            }
+                    if (!result.Succeeded)
+                    {
+                        return Results.BadRequest(result.Errors.AsErrorString());
+                    }
 
-            return Results.Ok(new CreateUserResponse(user.Id, user.Email, user.FirstName, user.LastName));
-        }).WithName("CreateUser")
-        .Produces<CreateUserResponse>()
-        .ProducesProblem(400)
-        .RequireAuthorization(SystemRoles.AdminPolicy);
+                    return Results.Ok(new CreateUserResponse(user.Id, user.Email, user.FirstName, user.LastName));
+                }).WithName("CreateUser")
+            .Produces<CreateUserResponse>()
+            .ProducesProblem(400)
+            .RequireAuthorization(SystemRoles.AdminPolicy);
 
         return endpoints;
     }

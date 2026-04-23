@@ -8,18 +8,18 @@ internal static class DeleteChildEndpoint
     internal static IEndpointRouteBuilder AddDeleteChildEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapDelete("/{childId:guid}", async (Guid childId, IChildRepository childRepository) =>
-        {
-            var child = await childRepository.GetByIdAsync(childId);
-
-            if (child is null)
             {
-                return Results.NotFound();
-            }
+                var child = await childRepository.GetByIdAsync(childId);
 
-            await childRepository.DeleteAsync(childId);
+                if (child is null)
+                {
+                    return Results.NotFound();
+                }
 
-            return Results.NoContent();
-        }).WithName("DeleteChild").WithOpenApi()
+                await childRepository.DeleteAsync(childId);
+
+                return Results.NoContent();
+            }).WithName("DeleteChild").WithOpenApi()
             .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
 
         return builder;

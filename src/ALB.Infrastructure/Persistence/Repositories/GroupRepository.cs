@@ -50,7 +50,7 @@ public class GroupRepository(ApplicationDbContext dbContext) : IGroupRepository
 
     public async Task<AcademicYear?> GetAcademicYearByIdAsync(Guid id, CancellationToken ct = default)
         => await dbContext.AcademicYears.FindAsync(id, ct);
-    
+
 
     public async Task<AllowedGroupname> CreateAllowedGroupnameAsync(AllowedGroupname allowedGroupname, CancellationToken ct = default)
     {

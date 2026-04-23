@@ -8,19 +8,20 @@ internal static class GetAllowedGroupnamesEndpoint
     internal static IEndpointRouteBuilder MapGetAllowedGroupnamesEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
         routeBuilder.MapGet("/allowed-groupnames", async (IGroupRepository groupRepository, CancellationToken ct) =>
-        {
-            var allowedGroupnames = await groupRepository.GetAllAllowedGroupnamesAsync(ct);
-            var allowedGroupnameDtos = allowedGroupnames.Select(ag =>
-                    new AllowedGroupnamesDto(ag.Id, ag.Groupname))
+            {
+                var allowedGroupnames = await groupRepository.GetAllAllowedGroupnamesAsync(ct);
+                var allowedGroupnameDtos = allowedGroupnames.Select(ag =>
+                        new AllowedGroupnamesDto(ag.Id, ag.Groupname))
                     .ToList();
-            return Results.Ok(new GetAllowedGroupnamesResponse(allowedGroupnameDtos));
-        }).WithName("GetAllowedGroupnames")
-        .Produces<GetAllowedGroupnamesResponse>()
+                return Results.Ok(new GetAllowedGroupnamesResponse(allowedGroupnameDtos));
+            }).WithName("GetAllowedGroupnames")
+            .Produces<GetAllowedGroupnamesResponse>()
             .RequireAuthorization(SystemRoles.AdminPolicy);
-        
+
         return routeBuilder;
     }
 }
 
 public record AllowedGroupnamesDto(Guid Id, string GroupName);
+
 public record GetAllowedGroupnamesResponse(List<AllowedGroupnamesDto> AllowedGroupnames);

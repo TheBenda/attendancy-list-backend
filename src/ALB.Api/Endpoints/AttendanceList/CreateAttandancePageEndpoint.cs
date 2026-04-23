@@ -9,10 +9,12 @@ internal static class GetAttendancePageEndpoint
 {
     internal static RouteGroupBuilder AddAttendancePageEndpoint(this RouteGroupBuilder builder)
     {
-        builder.MapPost("/attendancelists/{attendanceListId:guid}/page", async (Guid attendanceListId, GetAttendancePageRequest request, IAttendanceRepository attendanceListRepo, IChildRepository childRepo, IAbsenceDayRepository absenceRepo) =>
-        {
-            return Results.InternalServerError();
-        }).WithName("GetAttendancePage")
+        builder.MapPost("/attendancelists/{attendanceListId:guid}/page", async (Guid attendanceListId,
+                GetAttendancePageRequest request, IAttendanceRepository attendanceListRepo, IChildRepository childRepo,
+                IAbsenceDayRepository absenceRepo) =>
+            {
+                return Results.InternalServerError();
+            }).WithName("GetAttendancePage")
             .RequireAuthorization(SystemRoles.TeamPolicy);
         return builder;
     }

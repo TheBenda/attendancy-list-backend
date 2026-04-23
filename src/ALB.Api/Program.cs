@@ -43,7 +43,9 @@ if (builder.Environment.EnvironmentName != "Test")
         options.AddPolicy(viteAppCorsPolicy,
             pb =>
             {
-                pb.WithOrigins(viteAppUrl ?? throw new InvalidOperationException("Url to VITE_APP_HTTP not set in environment variables."))
+                pb.WithOrigins(viteAppUrl ??
+                               throw new InvalidOperationException(
+                                   "Url to VITE_APP_HTTP not set in environment variables."))
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials();
@@ -78,15 +80,10 @@ builder.Services.AddOpenApi(options =>
         document.Info.Version = "10.0";
         document.Info.Title = "Attendancy List Api .NET 10 API";
         document.Info.Description = "Rest API Definition for Attendancy List";
-        document.Info.Contact = new OpenApiContact
-        {
-            Name = "André Benda",
-            Email = "andre.benda@jambit.com"
-        };
+        document.Info.Contact = new OpenApiContact { Name = "André Benda", Email = "andre.benda@jambit.com" };
         document.Info.License = new OpenApiLicense
         {
-            Name = "MIT License",
-            Url = new Uri("https://opensource.org/licenses/MIT")
+            Name = "MIT License", Url = new Uri("https://opensource.org/licenses/MIT")
         };
         return Task.CompletedTask;
     });

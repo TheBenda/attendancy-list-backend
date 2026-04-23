@@ -13,12 +13,12 @@ internal static class GetUsersEndpoint
     internal static IEndpointRouteBuilder MapGetUsersEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
         routeBuilder.MapGet("/", async (UserManager<ApplicationUser> userManager, CancellationToken ct) =>
-        {
-            var userDtos = await userManager.Users.Select(u => u.ToDto(new List<string>())).ToListAsync(ct);
+            {
+                var userDtos = await userManager.Users.Select(u => u.ToDto(new List<string>())).ToListAsync(ct);
 
-            return Results.Ok(userDtos.ToResponse());
-        }).WithName("GetUsers")
-        .Produces<GetUsersResponse>()
+                return Results.Ok(userDtos.ToResponse());
+            }).WithName("GetUsers")
+            .Produces<GetUsersResponse>()
             .RequireAuthorization(SystemRoles.AdminPolicy);
 
         return routeBuilder;

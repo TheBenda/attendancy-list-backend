@@ -1,4 +1,3 @@
-using ALB.Domain.Entities;
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
 
@@ -11,23 +10,23 @@ internal static class GetChildEndpoint
     internal static IEndpointRouteBuilder AddGetChildEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapGet("/{childId:guid}", async (Guid childId, IChildRepository childRepository) =>
-        {
-            var child = await childRepository.GetByIdAsync(childId);
-
-            if (child is null)
             {
-                return Results.NotFound();
-            }
+                var child = await childRepository.GetByIdAsync(childId);
 
-            var response = new GetChildResponse(
-                child.Id,
-                child.FirstName,
-                child.LastName,
-                child.DateOfBirth
-            );
+                if (child is null)
+                {
+                    return Results.NotFound();
+                }
 
-            return Results.Ok(response);
-        }).WithName("GetChild")
+                var response = new GetChildResponse(
+                    child.Id,
+                    child.FirstName,
+                    child.LastName,
+                    child.DateOfBirth
+                );
+
+                return Results.Ok(response);
+            }).WithName("GetChild")
             .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
 
         return builder;

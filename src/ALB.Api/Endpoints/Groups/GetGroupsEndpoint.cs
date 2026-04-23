@@ -5,9 +5,9 @@ namespace ALB.Api.Endpoints.Groups;
 
 public static class GetGroupsEndpoint
 {
-        internal static IEndpointRouteBuilder MapGetGroupsEndpoint(this IEndpointRouteBuilder routeBuilder)
-        {
-            routeBuilder.MapGet("/", async (IGroupRepository groupRepository, CancellationToken ct) =>
+    internal static IEndpointRouteBuilder MapGetGroupsEndpoint(this IEndpointRouteBuilder routeBuilder)
+    {
+        routeBuilder.MapGet("/", async (IGroupRepository groupRepository, CancellationToken ct) =>
             {
                 var groups = await groupRepository.GetAllAsync(ct);
                 var groupDtos = groups.Select(g =>
@@ -17,9 +17,9 @@ public static class GetGroupsEndpoint
             }).WithName("GetGroups")
             .Produces<GetGroupsResponse>()
             .RequireAuthorization(SystemRoles.AdminPolicy);
-    
-            return routeBuilder;
-        }
+
+        return routeBuilder;
+    }
 }
 
 public record GetGroupsResponse(List<GetGroupResponse> groups);

@@ -12,22 +12,22 @@ internal static class GetUserEndpoint
     internal static IEndpointRouteBuilder MapGetUserEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
         routeBuilder.MapGet("/{userId:guid}", async (Guid userId, UserManager<ApplicationUser> userManager) =>
-        {
-            var user = await userManager.FindByIdAsync(userId.ToString());
-
-            if (user is null)
             {
-                return Results.NotFound();
-            }
-            
-            var userRoles = await userManager.GetRolesAsync(user);
+                var user = await userManager.FindByIdAsync(userId.ToString());
 
-            var response = new GetUserResponse(user.ToDto(userRoles));
+                if (user is null)
+                {
+                    return Results.NotFound();
+                }
 
-            return Results.Ok(response);
-        }).WithName("GetUser")
-        .Produces<GetUserResponse>()
-        .RequireAuthorization(SystemRoles.AdminPolicy);
+                var userRoles = await userManager.GetRolesAsync(user);
+
+                var response = new GetUserResponse(user.ToDto(userRoles));
+
+                return Results.Ok(response);
+            }).WithName("GetUser")
+            .Produces<GetUserResponse>()
+            .RequireAuthorization(SystemRoles.AdminPolicy);
 
         return routeBuilder;
     }

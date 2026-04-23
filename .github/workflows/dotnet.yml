@@ -8,6 +8,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -24,7 +25,10 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test -e ASPNETCORE_ENVIRONMENT=Test --no-build --verbosity normal
+    - name: Integration Tests
+      run: dotnet test -e ASPNETCORE_ENVIRONMENT=Test --no-build --verbosity normal --project tests/ApiIntegrationTests/ApiIntegrationTests/ApiIntegrationTests.csproj
+    - name: End2End Tests
+      if: github.event_name == 'workflow_dispatch'
+      run: dotnet test -e ASPNETCORE_ENVIRONMENT=Test --no-build --verbosity normal --project tests/EndToEndTests/EndToEndTests.csproj
     - name: Format
       run: dotnet format

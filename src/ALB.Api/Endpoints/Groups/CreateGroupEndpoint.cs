@@ -8,37 +8,38 @@ internal static class CreateGroupEndpoint
 {
     internal static IEndpointRouteBuilder MapCreateGroupEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
-        routeBuilder.MapPost("/", async (CreateGroupRequest request, IGroupRepository groupRepository, CancellationToken ct) =>
-        {
-            var academicYear = await groupRepository.GetAcademicYearByIdAsync(request.AcademicYearId, ct);
-            
-            if (academicYear is null)
-            {
-                return Results.BadRequest($"Academic year with id {request.AcademicYearId} does not exist.");
-            }
-            
-            var groupname = await groupRepository.GetAllowedGroupnameByIdAsync(request.GroupnameId, ct);
+        routeBuilder.MapPost("/",
+                async (CreateGroupRequest request, IGroupRepository groupRepository, CancellationToken ct) =>
+                {
+                    var academicYear = await groupRepository.GetAcademicYearByIdAsync(request.AcademicYearId, ct);
 
-            if (groupname is null)
-            {
-                return Results.BadRequest($"Groupname with id {request.GroupnameId} does not exist.");
-            }
-            
-            var group = new Group
-            {
-                Id = Guid.NewGuid(),
-                Name = request.GroupName,
-                ResponsibleUserId = request.ResponsibleUserId,
-                GroupnameId = request.GroupnameId,
-                Groupname = groupname,
-                AcademicYearId = request.AcademicYearId,
-                AcademicYear = academicYear
-            };
+                    if (academicYear is null)
+                    {
+                        return Results.BadRequest($"Academic year with id {request.AcademicYearId} does not exist.");
+                    }
 
-            var createdGroup = await groupRepository.CreateAsync(group);
+                    var groupname = await groupRepository.GetAllowedGroupnameByIdAsync(request.GroupnameId, ct);
 
-            return Results.Created($"/groups/{createdGroup.Id}", new CreateGroupResponse(createdGroup.Id));
-        }).WithName("CreateGroup")
+                    if (groupname is null)
+                    {
+                        return Results.BadRequest($"Groupname with id {request.GroupnameId} does not exist.");
+                    }
+
+                    var group = new Group
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = request.GroupName,
+                        ResponsibleUserId = request.ResponsibleUserId,
+                        GroupnameId = request.GroupnameId,
+                        Groupname = groupname,
+                        AcademicYearId = request.AcademicYearId,
+                        AcademicYear = academicYear
+                    };
+
+                    var createdGroup = await groupRepository.CreateAsync(group);
+
+                    return Results.Created($"/groups/{createdGroup.Id}", new CreateGroupResponse(createdGroup.Id));
+                }).WithName("CreateGroup")
             .Produces<CreateGroupResponse>(StatusCodes.Status201Created)
             .ProducesProblem(400)
             .RequireAuthorization(SystemRoles.AdminPolicy);

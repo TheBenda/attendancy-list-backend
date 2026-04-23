@@ -36,7 +36,7 @@ public static class PendingModelChangesChecker
             var migrationsAssembly = serviceProvider.GetRequiredService<IMigrationsAssembly>();
             var migrationsModelDiffer = serviceProvider.GetRequiredService<IMigrationsModelDiffer>();
             var modelRuntimeInitializer = serviceProvider.GetRequiredService<IModelRuntimeInitializer>();
-            
+
             // Get the snapshot model (from the last migration's ModelSnapshot)
             var snapshotModel = migrationsAssembly.ModelSnapshot?.Model;
             if (snapshotModel == null)
@@ -97,13 +97,13 @@ public static class PendingModelChangesChecker
             var migrationsAssembly = serviceProvider.GetRequiredService<IMigrationsAssembly>();
             var migrationsModelDiffer = serviceProvider.GetRequiredService<IMigrationsModelDiffer>();
             var modelRuntimeInitializer = serviceProvider.GetRequiredService<IModelRuntimeInitializer>();
-            
+
             var snapshotModel = migrationsAssembly.ModelSnapshot?.Model;
             if (snapshotModel == null)
             {
                 // Use runtime model (design-time model not available at runtime)
                 var entityCount = context.Model.GetEntityTypes().Count();
-                return entityCount > 0 
+                return entityCount > 0
                     ? $"No migrations exist. The current model has {entityCount} entity type(s) that need to be migrated."
                     : "No migrations exist and the model is empty.";
             }
@@ -112,7 +112,7 @@ public static class PendingModelChangesChecker
             // The snapshot model is already finalized, but needs runtime initialization
             var initializedSnapshotModel = modelRuntimeInitializer.Initialize(snapshotModel, validationLogger: null);
             var snapshotRelationalModel = initializedSnapshotModel.GetRelationalModel();
-            
+
             // Get the current model from the design-time model if available (for full configuration),
             // otherwise use runtime model. Note: IDesignTimeModel is only available at design-time.
             // At runtime, we use context.Model which may not have all configuration details.
@@ -131,7 +131,7 @@ public static class PendingModelChangesChecker
             var currentRelationalModel = currentModel.GetRelationalModel();
 
             var differences = migrationsModelDiffer.GetDifferences(snapshotRelationalModel, currentRelationalModel);
-            
+
             if (differences.Count == 0)
             {
                 return null;
