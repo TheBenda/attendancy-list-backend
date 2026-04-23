@@ -19,7 +19,7 @@ internal static class GetUserEndpoint
             {
                 return Results.NotFound();
             }
-            
+
             var userRoles = await userManager.GetRolesAsync(user);
 
             var response = new GetUserResponse(user.ToDto(userRoles));

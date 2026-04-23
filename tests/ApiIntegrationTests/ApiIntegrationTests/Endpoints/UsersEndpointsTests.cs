@@ -15,11 +15,11 @@ public class UsersEndpointsTests(BaseIntegrationTest baseIntegrationTest)
     [Test]
     public async Task Should_Login_User_Successfully()
     {
-        var response = 
+        var response =
             await baseIntegrationTest.GetAdminClient()
-                .PostAsJsonAsync("api/auth/login", 
+                .PostAsJsonAsync("api/auth/login",
                     new LoginRequest(BaseIntegrationTest.AdminEmail, BaseIntegrationTest.AdminPassword));
-        
+
         response.EnsureSuccessStatusCode();
         var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
         await Assert.That(loginResponse).IsNotNull();

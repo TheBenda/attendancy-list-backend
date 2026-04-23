@@ -184,16 +184,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         {
             e.HasKey(g => g.Id);
             e.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
-            
+
             e.Property(a => a.StartDate)
                 .IsRequired();
-            
+
             e.Property(a => a.EndDate)
                 .IsRequired();
-            
+
             e.HasIndex(a => new { a.StartDate, a.EndDate }).IsUnique();
         });
-        
+
         modelBuilder.Entity<AllowedGroupname>(e =>
         {
             e.HasKey(g => g.Id);
@@ -210,11 +210,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         {
             e.HasKey(g => g.Id);
             e.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
-            
+
             e.HasOne(gn => gn.Groupname)
                 .WithMany()
                 .HasForeignKey(g => g.GroupnameId);
-            
+
             e.HasOne(ay => ay.AcademicYear)
                 .WithMany()
                 .HasForeignKey(g => g.AcademicYearId);

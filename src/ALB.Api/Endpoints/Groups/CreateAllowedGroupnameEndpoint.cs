@@ -11,7 +11,7 @@ internal static class CreateAllowedGroupnameEndpoint
     internal static IEndpointRouteBuilder MapCreateAllowedGroupnameEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
         routeBuilder.MapPost("/allowed-groupnames",
-                async (CreateAllowedGroupnameRequest request, IGroupRepository groupRepository , CancellationToken cancellationToken) =>
+                async (CreateAllowedGroupnameRequest request, IGroupRepository groupRepository, CancellationToken cancellationToken) =>
                 {
                     var allowedGroupname = new AllowedGroupname { Groupname = request.GroupName };
                     await groupRepository.CreateAllowedGroupnameAsync(allowedGroupname, cancellationToken);

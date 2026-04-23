@@ -10,8 +10,8 @@ internal static class UserMappingExtensions
     {
         return new GetUsersResponse(users);
     }
-    
-    internal static UserDto ToDto(this ApplicationUser user, IList<string> userRoles) => new(user.Id, user.Email, user?.FirstName, user?.LastName, user?.PhoneNumber, 
+
+    internal static UserDto ToDto(this ApplicationUser user, IList<string> userRoles) => new(user.Id, user.Email, user?.FirstName, user?.LastName, user?.PhoneNumber,
         userRoles.Select(r => r.ToDto()).ToHashSet() ?? []);
 
     private static UserRole ToDto(this string role)

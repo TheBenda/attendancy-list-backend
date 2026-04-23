@@ -67,8 +67,8 @@ public static class ApplicationExtension
                 })
                 .AddIdentityCookies();
         }
-        
-        
+
+
 
         services.AddAuthorization();
 

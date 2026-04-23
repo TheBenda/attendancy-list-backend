@@ -25,13 +25,13 @@ internal static class CreateChildEndpoint
 
             if (request.GuardianIds.Count != 0)
             {
-                createdChild = await childRepository.AddGuardiansToChildAsync(createdChild.Id, request.GuardianIds, ct);
+                await childRepository.AddGuardiansToChildAsync(createdChild.Id, request.GuardianIds, ct);
             }
 
-            return Results.Ok(new CreateChildResponse(createdChild.Id, 
+            return Results.Ok(new CreateChildResponse(createdChild.Id,
                 createdChild.FirstName,
-                createdChild.LastName, 
-                createdChild.DateOfBirth, 
+                createdChild.LastName,
+                createdChild.DateOfBirth,
                 createdChild.Guardians.Select(g => g.ToDto([])).ToList()));
         }).WithName("CreateChild")
             .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));

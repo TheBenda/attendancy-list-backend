@@ -20,13 +20,13 @@ internal static class GetChildrenEndpoint
 
             var children = await repository
                 .TakeChildrenByCursor(cursor, limit, ct);
-            
+
             var hasMore = children.Count > limit;
-            
+
             Guid? nextCursor = hasMore ? children[^1].Id : null;
-            
+
             if (hasMore) children.RemoveAt(children.Count - 1);
-            
+
             var response = new GuidCursorResponse<GetChildResponse>(
                     children.Select(c => c.ToResponse()).ToList(),
                     new GuidCursorRequest(nextCursor, limit),
@@ -37,7 +37,7 @@ internal static class GetChildrenEndpoint
         .Produces<GuidCursorResponse<GetChildResponse>>()
         .ProducesProblem(400)
         .RequireAuthorization(SystemRoles.AdminPolicy);
-        
+
         return builder;
     }
 }

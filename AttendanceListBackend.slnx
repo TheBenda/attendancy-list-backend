@@ -3,6 +3,8 @@
     <File Path="Directory.Packages.props" />
   </Folder>
   <Folder Name="/aspire/">
+    <Project Path="aspire/ALB.AppHost/ALB.AppHost.csproj" />
+    <Project Path="aspire/ALB.MigrationService/ALB.MigrationService.csproj" />
     <Project Path="aspire/ServiceDefaults/ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/src/">
@@ -13,5 +15,6 @@
   </Folder>
   <Folder Name="/test/">
     <Project Path="tests/ApiIntegrationTests/ApiIntegrationTests/ApiIntegrationTests.csproj" />
+    <Project Path="tests/EndToEndTests/EndToEndTests.csproj" />
   </Folder>
 </Solution>

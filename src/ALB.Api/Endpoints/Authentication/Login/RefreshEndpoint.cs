@@ -18,7 +18,7 @@ internal static class RefreshEndpoint
             {
                 return Results.BadRequest("The refresh token has expired.");
             }
-            
+
             var userRoles = await userManager.GetRolesAsync(refreshToken.User);
 
             return Results.Ok(

@@ -86,8 +86,8 @@ public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
             await this.UserManager.AddToRoleAsync(parent, SystemRoles.Parent);
         }
 
-        AdminToken = await TokenProvider.Create(await this.UserManager.FindByEmailAsync(AdminEmail) ?? throw new InvalidOperationException(), new List<string>{SystemRoles.Admin});
-        ParentToken = await TokenProvider.Create(await this.UserManager.FindByEmailAsync(ParentEmail) ?? throw new InvalidOperationException(), new List<string>{SystemRoles.Parent});
+        AdminToken = await TokenProvider.Create(await this.UserManager.FindByEmailAsync(AdminEmail) ?? throw new InvalidOperationException(), new List<string> { SystemRoles.Admin });
+        ParentToken = await TokenProvider.Create(await this.UserManager.FindByEmailAsync(ParentEmail) ?? throw new InvalidOperationException(), new List<string> { SystemRoles.Parent });
     }
 
     private HttpClient GetHttpClient(string token)
@@ -239,7 +239,7 @@ file sealed class TestWebApplicationFactory(string connectionString)
                 var dataSource = serviceProvider.GetRequiredService<NpgsqlDataSource>();
                 options.UseNpgsql(dataSource, npgsqlOptions =>
                     npgsqlOptions.UseNodaTime());
-                
+
                 options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
             });
 
@@ -265,7 +265,7 @@ internal static class TestWebApplicationFactoryExtensions
     {
         return AddNpgsqlDataSource(services, configureSettings, connectionString, null, configureDataSourceBuilder);
     }
-    
+
     private static IServiceCollection AddNpgsqlDataSource(
         IServiceCollection services,
         Action<NpgsqlSettings>? configureSettings,
@@ -273,11 +273,11 @@ internal static class TestWebApplicationFactoryExtensions
         object? serviceKey,
         Action<NpgsqlDataSourceBuilder>? configureDataSourceBuilder)
     {
-        NpgsqlSettings npgsqlSettings = new ();
+        NpgsqlSettings npgsqlSettings = new();
         npgsqlSettings.ConnectionString = connectionString;
         if (configureSettings != null)
             configureSettings(npgsqlSettings);
-    
+
         services.AddNpgsqlDataSource(connectionString, (dataSourceBuilder =>
         {
             Action<NpgsqlDataSourceBuilder> action = configureDataSourceBuilder;

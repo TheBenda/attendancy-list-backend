@@ -46,30 +46,30 @@ public class PowerUserSeederService(IServiceProvider serviceProvider) : IHostedS
 
         if (adminUser is null)
         {
-            await CreateUser(userManager, AdminEmail,"Admin",SystemRoles.Admin);
+            await CreateUser(userManager, AdminEmail, "Admin", SystemRoles.Admin);
         }
-        
+
         var teamUser = await userManager.FindByEmailAsync(DummyTeamMemberEmail);
 
         if (teamUser is null)
         {
-            await CreateUser(userManager, DummyTeamMemberEmail,"Team-Member",SystemRoles.Team);
+            await CreateUser(userManager, DummyTeamMemberEmail, "Team-Member", SystemRoles.Team);
         }
-        
+
         var parentUser = await userManager.FindByEmailAsync(DummyParentEmail);
 
         if (parentUser is null)
         {
-            await CreateUser(userManager, DummyParentEmail,"Parent",SystemRoles.Parent);
+            await CreateUser(userManager, DummyParentEmail, "Parent", SystemRoles.Parent);
         }
-        
+
         var academicYears = await groupRepository.GetAcademicYearsAsync(cancellationToken);
         if (academicYears.Count is 0)
         {
             var currentYear = SystemClock.Instance.GetCurrentInstant().InZone(DateTimeZone.Utc).Year;
             var lowestYear = currentYear - 7;
             var highestYear = currentYear + 15;
-            
+
             var newAcademicYears = new List<AcademicYear>();
 
             for (int i = lowestYear; i <= highestYear; i++)
@@ -77,9 +77,9 @@ public class PowerUserSeederService(IServiceProvider serviceProvider) : IHostedS
                 var ay = new AcademicYear
                 {
                     StartDate = new DateOnly(i, 7, 1),
-                    EndDate = new DateOnly(i+1, 6, 30)
+                    EndDate = new DateOnly(i + 1, 6, 30)
                 };
-                
+
                 newAcademicYears.Add(ay);
             }
 

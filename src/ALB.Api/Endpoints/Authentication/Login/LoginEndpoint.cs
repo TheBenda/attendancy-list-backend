@@ -20,7 +20,7 @@ internal static class LoginEndpoint
             {
                 return TypedResults.Unauthorized();
             }
-            
+
             var userRoles = await userManager.GetRolesAsync(user);
 
             return TypedResults.Ok(

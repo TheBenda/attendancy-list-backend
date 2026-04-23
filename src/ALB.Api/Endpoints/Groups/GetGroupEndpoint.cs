@@ -19,7 +19,7 @@ public static class GetGroupEndpoint
         }).WithName("GetGroup")
         .Produces<GetGroupResponse>()
         .RequireAuthorization(SystemRoles.AdminPolicy);
-        
+
         return builder;
     }
 }

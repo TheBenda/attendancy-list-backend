@@ -17,7 +17,7 @@ internal static class GetAllowedGroupnamesEndpoint
         }).WithName("GetAllowedGroupnames")
         .Produces<GetAllowedGroupnamesResponse>()
             .RequireAuthorization(SystemRoles.AdminPolicy);
-        
+
         return routeBuilder;
     }
 }

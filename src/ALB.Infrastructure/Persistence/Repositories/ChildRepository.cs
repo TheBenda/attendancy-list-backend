@@ -29,7 +29,7 @@ public class ChildRepository(ApplicationDbContext dbContext, UserManager<Applica
     {
         //using var activity = ActivitySources.BackendActivitySource.StartActivity("Add Guardians to Child");
         var child = await dbContext.Children.FindAsync(childId, ct);
-        
+
         if (child is null) throw new Exception("Child not found");
 
         foreach (var guardianId in guardianIds)
@@ -43,7 +43,7 @@ public class ChildRepository(ApplicationDbContext dbContext, UserManager<Applica
                 //activity?.AddException(ex);
                 throw ex;
             }
-            
+
             var userRoles = await userManager.GetRolesAsync(foundUser);
 
             if (userRoles.Contains(SystemRoles.Parent))
@@ -51,21 +51,43 @@ public class ChildRepository(ApplicationDbContext dbContext, UserManager<Applica
                 child.Guardians.Add(foundUser);
             }
         }
-        
+
         await dbContext.SaveChangesAsync(ct);
-        
+
         return child;
     }
 
     public async Task<List<Child>> TakeChildrenByCursor(Guid? cursor, int limit, CancellationToken ct = default)
     {
-        return await dbContext.Children
+        var childrenUnordered = await dbContext.Children.ToListAsync(ct);
+
+        var childrenOrdered = await dbContext.Children
+            .OrderByDescending(c => c.Id)
+            .ToListAsync(ct);
+
+        var childrenOrderedLimited = await dbContext.Children
+            .OrderByDescending(c => c.Id)
+            .Take(limit + 1)
+            .ToListAsync(ct);
+
+        var cursored = await dbContext.Children
             .OrderByDescending(c => c.Id)
             .Where(c => c.Id <= cursor)
             .Take(limit + 1)
             .ToListAsync(ct);
+
+        return cursor is null ?
+            await dbContext.Children
+                .OrderByDescending(c => c.Id)
+                .Take(limit + 1)
+                .ToListAsync(ct) :
+            await dbContext.Children
+                .OrderByDescending(c => c.Id)
+                .Where(c => c.Id <= cursor)
+                .Take(limit + 1)
+                .ToListAsync(ct);
     }
-    
+
 
     public async Task UpdateAsync(Child child)
     {
