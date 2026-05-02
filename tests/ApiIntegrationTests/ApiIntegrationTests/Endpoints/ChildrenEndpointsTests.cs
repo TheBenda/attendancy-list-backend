@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 
 using ALB.Api.Endpoints;
 using ALB.Api.Endpoints.Children;
+using ALB.Api.Endpoints.Mappers;
 using ALB.Api.Endpoints.Users;
 using ALB.Api.Endpoints.Users.Roles;
 using ALB.Domain.Entities;
@@ -33,6 +34,13 @@ public class ChildrenEndpointsTests(BaseIntegrationTest baseIntegrationTest)
             await adminClient.PostAsJsonAsync("api/children", createChildRequest);
 
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        
+        var createdChild =
+            await response.Content.ReadFromJsonAsync<CreateChildResponse>();
+        
+        await Assert.That(createdChild.DateOfBirth).IsEqualTo(createChildRequest.DateOfBirth);
+        await Assert.That(createdChild.FirstName).IsEqualTo(createChildRequest.FirstName);
+        await Assert.That(createdChild.LastName).IsEqualTo(createChildRequest.LastName);
     }
 
     [Test]
@@ -199,7 +207,45 @@ public class ChildrenEndpointsTests(BaseIntegrationTest baseIntegrationTest)
     }
 
     [Test]
-    [Skip("Bug with deserialization of LocalDate")]
+    public async Task Should_Return_Children_of_Parent_Successfully()
+    {
+        var adminClient = baseIntegrationTest.GetAdminClient();
+        var createUserRequest = TestDataFaker.UserRequestFaker.Generate();
+        var createUserResponse =
+            await adminClient.PostAsJsonAsync("api/users", createUserRequest);
+        createUserResponse.EnsureSuccessStatusCode();
+        
+        var createdUser =
+            await createUserResponse.Content.ReadFromJsonAsync<CreateUserResponse>();
+        
+        await Assert.That(createdUser).IsNotNull();
+        
+        _ = await baseIntegrationTest.GetAdminClient()
+            .PostAsJsonAsync($"api/users/{createdUser.Id}/roles", 
+                new AddUserRoleRequest
+        (
+            SystemRoles.Parent
+        ));
+        
+        var createChildRequest = TestDataFaker.CreateChildForGuardians([createdUser.Id]);
+        var response =
+            await adminClient.PostAsJsonAsync("api/children", createChildRequest);
+
+        response.EnsureSuccessStatusCode();
+        
+        var childrenOfGuardian = 
+            await adminClient.GetAsync($"api/users/guardians-children/{createdUser.Id}");
+        
+        childrenOfGuardian.EnsureSuccessStatusCode();
+        
+        var childrenOfGuardianResponse = 
+            await childrenOfGuardian.Content.ReadFromJsonAsync<GetChildrenOfGuardianResponse>();
+        
+        await Assert.That(childrenOfGuardianResponse).IsNotNull();
+        await Assert.That(childrenOfGuardianResponse.Children.Length).IsEqualTo(1);
+    }
+
+    [Test]
     public async Task Should_Update_Child_Successfully()
     {
         var adminClient = baseIntegrationTest.GetAdminClient();
@@ -220,7 +266,7 @@ public class ChildrenEndpointsTests(BaseIntegrationTest baseIntegrationTest)
         var childLastName = "Mustermann";
         var childDateOfBirth = new LocalDate(2023, 8, 11);
 
-        var updateChildRequest = new UpdateChildRequest(childFirstName, childLastName, childDateOfBirth);
+        var updateChildRequest = new UpdateChildRequest(childFirstName, childLastName, childDateOfBirth.ToUnixTimestamp());
 
         response = await adminClient.PutAsJsonAsync($"api/children/{childId}", updateChildRequest);
 
@@ -236,7 +282,7 @@ public class ChildrenEndpointsTests(BaseIntegrationTest baseIntegrationTest)
         await Assert.That(updatedChild).IsNotNull();
         await Assert.That(updatedChild!.FirstName).IsEqualTo(childFirstName);
         await Assert.That(updatedChild.LastName).IsEqualTo(childLastName);
-        await Assert.That(updatedChild.DateOfBirth).IsEqualTo(childDateOfBirth);
+        await Assert.That(updatedChild.DateOfBirth).IsEqualTo(childDateOfBirth.ToUnixTimestamp());
     }
 
     private async Task GenerateParentWithChildren()
@@ -274,7 +320,7 @@ public class ChildrenEndpointsTests(BaseIntegrationTest baseIntegrationTest)
             {
                 FirstName = createChildRequest.FirstName,
                 LastName = createChildRequest.LastName,
-                DateOfBirth = createChildRequest.DateOfBirth
+                DateOfBirth = createChildRequest.DateOfBirth.ToLocalDate()
             };
 
             var createdChild = await childRepository.CreateAsync(child, CancellationToken.None);

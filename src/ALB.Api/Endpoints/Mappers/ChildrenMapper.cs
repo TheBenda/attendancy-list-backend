@@ -11,7 +11,7 @@ public static class ChildrenMapper
             child.Id,
             child.FirstName,
             child.LastName,
-            child.DateOfBirth
+            child.DateOfBirth.ToUnixTimestamp()
         );
     }
 }

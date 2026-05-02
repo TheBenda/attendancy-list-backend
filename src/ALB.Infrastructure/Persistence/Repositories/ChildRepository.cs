@@ -110,11 +110,13 @@ public class ChildRepository(ApplicationDbContext dbContext, UserManager<Applica
         throw new NotImplementedException();
     }
 
-    public async Task<List<Child>> GetByParentId(Guid parentId)
+    public async Task<List<Child>> GetChildrenOfGuardian(Guid guardianId, CancellationToken ct)
     {
-        return await dbContext.Children
-            .Include(c => c.Guardians)
-            .Where(child => child.Guardians.Any(p => p.Id == parentId))
-            .ToListAsync();
+        var userWithChildren = await dbContext.ApplicationUsers
+            .Where(au => au.Id == guardianId)
+            .Include(au => au.Children)
+            .SingleAsync(ct);
+
+        return userWithChildren.Children.ToList();
     }
 }

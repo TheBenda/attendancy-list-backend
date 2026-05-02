@@ -1,7 +1,6 @@
+using ALB.Api.Endpoints.Mappers;
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
-
-using NodaTime;
 
 namespace ALB.Api.Endpoints.Children;
 
@@ -22,7 +21,7 @@ internal static class GetChildEndpoint
                     child.Id,
                     child.FirstName,
                     child.LastName,
-                    child.DateOfBirth
+                    child.DateOfBirth.ToUnixTimestamp()
                 );
 
                 return Results.Ok(response);
@@ -33,4 +32,4 @@ internal static class GetChildEndpoint
     }
 }
 
-public record GetChildResponse(Guid Id, string FirstName, string LastName, LocalDate DateOfBirth);
+public record GetChildResponse(Guid Id, string FirstName, string LastName, long DateOfBirth);

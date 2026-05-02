@@ -305,6 +305,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
                 .WithOne(e => e.User)
                 .HasForeignKey(ur => ur.UserId)
                 .IsRequired();
+
+            b.HasMany(e => e.Children)
+                .WithMany(c => c.Guardians);
+
         });
 
         modelBuilder.Entity<ApplicationRole>(b =>

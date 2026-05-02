@@ -1,5 +1,6 @@
 using System.Text.Json;
 
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
 
 using NodaTime;
@@ -17,7 +18,7 @@ public static class DateTimeExtensions
 
     public static IServiceCollection AddNodaTimeJsonConverters(this IServiceCollection serviceCollection)
     {
-        serviceCollection.Configure<JsonSerializerOptions>(opts =>
+        void ConfigureNodaTime(JsonSerializerOptions opts)
         {
             opts.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
             opts.Converters.Add(NodaConverters.IntervalConverter);
@@ -25,6 +26,13 @@ public static class DateTimeExtensions
             opts.Converters.Add(NodaConverters.LocalDateConverter);
             opts.Converters.Add(NodaConverters.LocalDateTimeConverter);
             opts.Converters.Add(NodaConverters.LocalTimeConverter);
+        }
+
+        serviceCollection.Configure<JsonSerializerOptions>(ConfigureNodaTime);
+        
+        serviceCollection.Configure<JsonOptions>(options =>
+        {
+            ConfigureNodaTime(options.SerializerOptions);
         });
 
         return serviceCollection;
