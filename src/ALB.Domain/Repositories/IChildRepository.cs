@@ -10,6 +10,5 @@ public interface IChildRepository
     Task<List<Child>> TakeChildrenByCursor(Guid? cursor, int limit, CancellationToken ct = default);
     Task UpdateAsync(Child child);
     Task DeleteAsync(Guid id);
-    Task<List<Child>> GetByParentId(Guid parentId);
-
+    Task<List<Child>> GetChildrenOfGuardian(Guid guardianId, CancellationToken ct);
 }

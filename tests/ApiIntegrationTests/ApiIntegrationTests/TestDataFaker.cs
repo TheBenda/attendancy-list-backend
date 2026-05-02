@@ -1,4 +1,5 @@
 ﻿using ALB.Api.Endpoints.Children;
+using ALB.Api.Endpoints.Mappers;
 using ALB.Api.Endpoints.Users;
 
 using Bogus;
@@ -9,11 +10,13 @@ namespace ApiIntegrationTests;
 
 public static class TestDataFaker
 {
+    public static readonly Faker Faker = new Faker();
+    
     public static readonly Faker<CreateChildRequest> ChildRequestFaker = new Faker<CreateChildRequest>()
         .CustomInstantiator(f => new CreateChildRequest(
             f.Name.FirstName(),
             f.Name.LastName(),
-            LocalDate.FromDateTime(f.Date.Past(10, DateTime.Today)),
+            LocalDate.FromDateTime(f.Date.Past(10, DateTime.Today)).ToUnixTimestamp(),
             []
         ));
 

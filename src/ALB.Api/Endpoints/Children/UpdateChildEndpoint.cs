@@ -1,7 +1,6 @@
+using ALB.Api.Endpoints.Mappers;
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
-
-using NodaTime;
 
 namespace ALB.Api.Endpoints.Children;
 
@@ -20,16 +19,15 @@ internal static class UpdateChildEndpoint
 
                     existingChild.FirstName = request.ChildFirstName;
                     existingChild.LastName = request.ChildLastName;
-                    existingChild.DateOfBirth = request.ChildDateOfBirth;
+                    existingChild.DateOfBirth = request.DateOfBirth.ToLocalDate();
 
                     await childRepository.UpdateAsync(existingChild);
 
                     return Results.NoContent();
                 }).WithName("UpdateChild")
-            .WithOpenApi()
             .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
         return builder;
     }
 }
 
-public record UpdateChildRequest(string ChildFirstName, string ChildLastName, LocalDate ChildDateOfBirth);
+public record UpdateChildRequest(string ChildFirstName, string ChildLastName, long DateOfBirth);
