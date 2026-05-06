@@ -7,7 +7,7 @@ internal static class AddChildrenToGroupEndpoint
 {
     internal static IEndpointRouteBuilder MapAddChildrenToGroupEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/{groupId:guid}/children", async (Guid groupId, AddChildToGroupRequest request,
+        endpoints.MapPost("/{groupId:guid}/children", async (Guid groupId, AddChildrenToGroupRequest request,
                 IGroupRepository repository, CancellationToken cancellationToken) =>
             {
                 await repository.AddChildrenToGroupAsync(groupId, request.ChildIds, cancellationToken);
@@ -20,4 +20,4 @@ internal static class AddChildrenToGroupEndpoint
     }
 }
 
-public record AddChildToGroupRequest(List<Guid> ChildIds);
+public record AddChildrenToGroupRequest(List<Guid> ChildIds);

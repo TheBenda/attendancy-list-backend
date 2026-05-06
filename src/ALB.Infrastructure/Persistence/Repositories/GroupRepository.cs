@@ -65,11 +65,11 @@ public class GroupRepository(ApplicationDbContext dbContext) : IGroupRepository
     public async Task<AllowedGroupname?> GetAllowedGroupnameByIdAsync(Guid id, CancellationToken ct = default)
         => await dbContext.AllowedGroupnames.FindAsync(id, ct);
 
-    public async Task AddChildrenToGroupAsync(Guid groupId, IEnumerable<Guid> childIds, CancellationToken ct)
+    public async Task AddChildrenToGroupAsync(Guid groupId, List<Guid> childIds, CancellationToken ct)
     {
         var group = await dbContext.Groups
             .Include(g => g.Children)
-            .FirstOrDefaultAsync(g => g.Id == groupId, ct);
+            .SingleOrDefaultAsync(g => g.Id == groupId, ct);
 
         if (group is null) throw new Exception("Group not found");
 
