@@ -11,7 +11,7 @@ public static class GetGroupsEndpoint
             {
                 var groups = await groupRepository.GetAllAsync(ct);
                 var groupDtos = groups.Select(g =>
-                        new GetGroupResponse(g.Id, g.Name))
+                        new GetGroupResponse(g.Id, g.Name, [], null, null, null))
                     .ToList();
                 return Results.Ok(new GetGroupsResponse(groupDtos));
             }).WithName("GetGroups")

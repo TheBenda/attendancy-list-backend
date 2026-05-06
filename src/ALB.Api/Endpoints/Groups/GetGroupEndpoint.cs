@@ -1,3 +1,8 @@
+using ALB.Api.Endpoints.Children;
+using ALB.Api.Endpoints.Groups.Mappers;
+using ALB.Api.Endpoints.Mappers;
+using ALB.Api.Endpoints.Users.Mappers;
+using ALB.Api.Models;
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
 
@@ -5,7 +10,7 @@ namespace ALB.Api.Endpoints.Groups;
 
 public static class GetGroupEndpoint
 {
-    public static RouteGroupBuilder MapGetGroupEndpoint(this RouteGroupBuilder builder)
+    public static IEndpointRouteBuilder MapGetGroupEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapGet("/{groupId:guid}",
                 async (Guid groupId, IGroupRepository groupRepository, CancellationToken ct) =>
@@ -16,7 +21,12 @@ public static class GetGroupEndpoint
                         return Results.NotFound();
                     }
 
-                    return Results.Ok(new GetGroupResponse(group.Id, group.Name));
+                    return Results.Ok(new GetGroupResponse(group.Id, 
+                        group.Name,
+                        group.Children.Select(c => c.ToResponse()).ToList(),
+                        group.ResponsibleUser.ToDto([]),
+                        group.AcademicYear.ToDto(),
+                        group.Groupname.ToDto()));
                 }).WithName("GetGroup")
             .Produces<GetGroupResponse>()
             .RequireAuthorization(SystemRoles.AdminPolicy);
@@ -25,4 +35,4 @@ public static class GetGroupEndpoint
     }
 }
 
-public record GetGroupResponse(Guid Id, string GroupName);
+public record GetGroupResponse(Guid Id, string GroupName, List<GetChildResponse> Children, UserDto? ResponsibleUser, AcademicYearDto? AcademicYear, AllowedGroupnamesDto? AllowedGroupName);

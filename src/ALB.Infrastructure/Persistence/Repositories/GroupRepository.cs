@@ -16,7 +16,13 @@ public class GroupRepository(ApplicationDbContext dbContext) : IGroupRepository
 
     public async Task<Group?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        return await dbContext.Groups
+            .Where(g => g.Id == id)
+            .Include(g => g.AcademicYear)
+            .Include(g => g.Groupname)
+            .Include(g => g.Children)
+            .Include(g => g.ResponsibleUser)
+            .SingleOrDefaultAsync(ct);
     }
 
     public async Task UpdateAsync(Group group)
