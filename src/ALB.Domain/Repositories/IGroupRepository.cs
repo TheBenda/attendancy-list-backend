@@ -15,7 +15,7 @@ public interface IGroupRepository
     Task<AllowedGroupname> CreateAllowedGroupnameAsync(AllowedGroupname allowedGroupname, CancellationToken ct = default);
     Task<List<AllowedGroupname>> GetAllAllowedGroupnamesAsync(CancellationToken ct = default);
     Task<AllowedGroupname?> GetAllowedGroupnameByIdAsync(Guid id, CancellationToken ct = default);
-    Task AddChildrenToGroupAsync(Guid groupId, IEnumerable<Guid> childIds, CancellationToken ct);
+    Task AddChildrenToGroupAsync(Guid groupId, List<Guid> childIds, CancellationToken ct);
     Task RemoveChildrenFromGroupAsync(Guid groupId, IEnumerable<Guid> childIds, CancellationToken ct);
 
 }

@@ -1,5 +1,7 @@
 using ALB.Domain.Entities;
 
+using Ardalis.Specification;
+
 namespace ALB.Domain.Repositories;
 
 public interface IChildRepository
@@ -11,4 +13,5 @@ public interface IChildRepository
     Task UpdateAsync(Child child);
     Task DeleteAsync(Guid id);
     Task<List<Child>> GetChildrenOfGuardian(Guid guardianId, CancellationToken ct);
+    Task<List<Child>> ListChildrenAsync(ISpecification<Child> specification, CancellationToken ct = default);
 }

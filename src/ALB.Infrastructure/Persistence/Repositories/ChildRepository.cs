@@ -2,6 +2,9 @@ using ALB.Domain.Entities;
 using ALB.Domain.Identity;
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
+
+using Ardalis.Specification;
+using Ardalis.Specification.EntityFrameworkCore;
 //using ServiceDefaults.Activities;
 
 using Microsoft.AspNetCore.Identity;
@@ -59,23 +62,6 @@ public class ChildRepository(ApplicationDbContext dbContext, UserManager<Applica
 
     public async Task<List<Child>> TakeChildrenByCursor(Guid? cursor, int limit, CancellationToken ct = default)
     {
-        var childrenUnordered = await dbContext.Children.ToListAsync(ct);
-
-        var childrenOrdered = await dbContext.Children
-            .OrderByDescending(c => c.Id)
-            .ToListAsync(ct);
-
-        var childrenOrderedLimited = await dbContext.Children
-            .OrderByDescending(c => c.Id)
-            .Take(limit + 1)
-            .ToListAsync(ct);
-
-        var cursored = await dbContext.Children
-            .OrderByDescending(c => c.Id)
-            .Where(c => c.Id <= cursor)
-            .Take(limit + 1)
-            .ToListAsync(ct);
-
         return cursor is null ?
             await dbContext.Children
                 .OrderByDescending(c => c.Id)
@@ -119,4 +105,9 @@ public class ChildRepository(ApplicationDbContext dbContext, UserManager<Applica
 
         return userWithChildren.Children.ToList();
     }
+
+    public async Task<List<Child>> ListChildrenAsync(ISpecification<Child> specification, CancellationToken ct = default)
+        => await dbContext.Children
+            .WithSpecification(specification)
+            .ToListAsync(ct);
 }

@@ -12,19 +12,7 @@ internal static class GetChildEndpoint
             {
                 var child = await childRepository.GetByIdAsync(childId);
 
-                if (child is null)
-                {
-                    return Results.NotFound();
-                }
-
-                var response = new GetChildResponse(
-                    child.Id,
-                    child.FirstName,
-                    child.LastName,
-                    child.DateOfBirth.ToUnixTimestamp()
-                );
-
-                return Results.Ok(response);
+                return child is null ? Results.NotFound() : Results.Ok(child.ToResponse());
             }).WithName("GetChild")
             .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
 

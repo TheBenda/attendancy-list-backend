@@ -13,6 +13,7 @@ internal static class ChildrenEndpointsGroup
             .AddGetChildEndpoint()
             .MapGetChildrenEndpoint()
             .AddUpdateChildEndpoint()
+            .MapSearchChildrenByNameEndpoint()
             .AddCreateAbsenceForChildEndpoint();
     }
 }

@@ -1,3 +1,4 @@
+using ALB.Api.Endpoints.Groups.Mappers;
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
 
@@ -11,7 +12,7 @@ internal static class GetAcademicYearsEndpoints
             {
                 var academicYears = await groupRepository.GetAcademicYearsAsync(ct);
 
-                return Results.Ok(academicYears.Select(ay => new AcademicYearDto(ay.Id, ay.StartDate, ay.EndDate))
+                return Results.Ok(academicYears.Select(ay => ay.ToDto())
                     .ToList());
             }).WithName("GetAcademicYears")
             .Produces<List<AcademicYearDto>>()

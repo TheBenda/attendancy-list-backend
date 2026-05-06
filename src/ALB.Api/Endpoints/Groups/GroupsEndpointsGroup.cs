@@ -10,6 +10,7 @@ internal static class GroupsEndpointsGroup
         routeBuilder.MapGroup("/api/groups")
             .WithTags("Groups Management")
             .MapAddChildrenToGroupEndpoint()
+            .MapGetGroupEndpoint()
             .MapGetGroupsEndpoint()
             //.MapRemoveChildrenFromGroupEndpoint()
             .MapCreateGroupEndpoint()

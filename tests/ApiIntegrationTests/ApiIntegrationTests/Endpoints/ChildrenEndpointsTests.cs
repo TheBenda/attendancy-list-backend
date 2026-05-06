@@ -107,6 +107,7 @@ public class ChildrenEndpointsTests(BaseIntegrationTest baseIntegrationTest)
             await adminClient.GetAsync("api/children");
 
         response.EnsureSuccessStatusCode();
+        
 
         var initialCursorResponse =
             await response.Content.ReadFromJsonAsync<GuidCursorResponse<GetChildResponse>>();
@@ -243,6 +244,31 @@ public class ChildrenEndpointsTests(BaseIntegrationTest baseIntegrationTest)
         
         await Assert.That(childrenOfGuardianResponse).IsNotNull();
         await Assert.That(childrenOfGuardianResponse.Children.Length).IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task Search_with_no_search_term_should_return_all_children()
+    {
+        await GenerateParentWithChildren();
+        
+        var adminClient = baseIntegrationTest.GetAdminClient();
+        var response =
+            await adminClient.GetAsync("api/children/search-by-name");
+
+        response.EnsureSuccessStatusCode();
+        
+
+        var initialCursorResponse =
+            await response.Content.ReadFromJsonAsync<GuidCursorResponse<GetChildResponse>>();
+
+
+        await Assert.That(initialCursorResponse).IsNotNull();
+        var initialItems = initialCursorResponse.Items;
+        var initialCursor = initialCursorResponse.Cursor;
+        await Assert.That(initialCursorResponse.HasMore).IsTrue();
+        await Assert.That(initialItems.Count).IsEqualTo(10);
+        await Assert.That(initialCursor).IsNotNull();
+        await Assert.That(initialCursor.Cursor).IsNotNull();
     }
 
     [Test]
