@@ -1,3 +1,4 @@
+using ALB.Api.Endpoints.Groups.Mappers;
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
 
@@ -11,7 +12,7 @@ internal static class GetAllowedGroupnamesEndpoint
             {
                 var allowedGroupnames = await groupRepository.GetAllAllowedGroupnamesAsync(ct);
                 var allowedGroupnameDtos = allowedGroupnames.Select(ag =>
-                        new AllowedGroupnamesDto(ag.Id, ag.Groupname))
+                        ag.ToDto())
                     .ToList();
                 return Results.Ok(new GetAllowedGroupnamesResponse(allowedGroupnameDtos));
             }).WithName("GetAllowedGroupnames")
