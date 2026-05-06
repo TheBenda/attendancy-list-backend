@@ -246,6 +246,12 @@ public class ChildrenEndpointsTests(BaseIntegrationTest baseIntegrationTest)
     }
 
     [Test]
+    public async Task Should_return_search_results()
+    {
+        
+    }
+
+    [Test]
     public async Task Should_Update_Child_Successfully()
     {
         var adminClient = baseIntegrationTest.GetAdminClient();

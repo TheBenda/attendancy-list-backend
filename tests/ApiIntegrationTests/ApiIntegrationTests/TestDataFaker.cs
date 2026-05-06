@@ -20,6 +20,9 @@ public static class TestDataFaker
             []
         ));
 
+    public static CreateChildRequest CreateCreateChildRequest(string firstName, string lastName)
+        => new(firstName, lastName, LocalDate.FromDateTime(Faker.Date.Past(10, DateTime.Today)).ToUnixTimestamp(), []);
+
     public static CreateChildRequest CreateChildForGuardians(List<Guid> guids)
     {
         var request = ChildRequestFaker.Generate();
