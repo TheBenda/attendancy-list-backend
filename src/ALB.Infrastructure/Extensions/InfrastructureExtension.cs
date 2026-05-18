@@ -4,6 +4,7 @@ using ALB.Domain.Values;
 using ALB.Infrastructure.Persistence;
 using ALB.Infrastructure.Persistence.Repositories;
 using ALB.Infrastructure.Services;
+using ALB.VaultApi.Extensions;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,8 @@ public static class InfrastructureExtension
 
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddVaultApiAdapter(configuration);
+        
         services.AddHostedService<PowerUserSeederService>();
 
         services.AddScoped<IChildRepository, ChildRepository>();

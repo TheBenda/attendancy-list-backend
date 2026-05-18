@@ -12,6 +12,7 @@ internal static class LoginEndpoint
 {
     internal static IEndpointRouteBuilder MapLoginEndpoint(this IEndpointRouteBuilder endpoints)
     {
+        // https://baseurl/api/auth/login
         endpoints.MapPost("/login",
             async Task<Results<Ok<LoginResponse>, UnauthorizedHttpResult>> (LoginRequest request,
                 UserManager<ApplicationUser> userManager, TokenProvider tokenProver, CancellationToken ct) =>

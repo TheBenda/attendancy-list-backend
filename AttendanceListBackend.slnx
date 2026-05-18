@@ -12,6 +12,7 @@
     <Project Path="src/ALB.Application/ALB.Application.csproj" />
     <Project Path="src/ALB.Domain/ALB.Domain.csproj" />
     <Project Path="src/ALB.Infrastructure/ALB.Infrastructure.csproj" />
+    <Project Path="src/ALB.VaultApi/ALB.VaultApi.csproj" />
   </Folder>
   <Folder Name="/test/">
     <Project Path="tests/ApiIntegrationTests/ApiIntegrationTests/ApiIntegrationTests.csproj" />
