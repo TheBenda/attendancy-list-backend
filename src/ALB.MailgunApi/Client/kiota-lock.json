@@ -1,0 +1,34 @@
+{
+  "descriptionHash": "C86357108EB16889E442940D5C41F057CAE681D278FE36496D868411458D7B18CD0219DE8FCA9ECDA95BF9A727207697979026A086803D1E6988A7717E3BFCDA",
+  "descriptionLocation": "../mailgun.yaml",
+  "lockFileVersion": "1.0.0",
+  "kiotaVersion": "1.31.1",
+  "clientClassName": "MailgunApiClient",
+  "typeAccessModifier": "Public",
+  "clientNamespaceName": "MailgunApi.Client",
+  "language": "CSharp",
+  "usesBackingStore": false,
+  "excludeBackwardCompatible": false,
+  "includeAdditionalData": true,
+  "disableSSLValidation": false,
+  "serializers": [
+    "Microsoft.Kiota.Serialization.Json.JsonSerializationWriterFactory",
+    "Microsoft.Kiota.Serialization.Text.TextSerializationWriterFactory",
+    "Microsoft.Kiota.Serialization.Form.FormSerializationWriterFactory",
+    "Microsoft.Kiota.Serialization.Multipart.MultipartSerializationWriterFactory"
+  ],
+  "deserializers": [
+    "Microsoft.Kiota.Serialization.Json.JsonParseNodeFactory",
+    "Microsoft.Kiota.Serialization.Text.TextParseNodeFactory",
+    "Microsoft.Kiota.Serialization.Form.FormParseNodeFactory"
+  ],
+  "structuredMimeTypes": [
+    "application/json",
+    "text/plain;q=0.9",
+    "application/x-www-form-urlencoded;q=0.2",
+    "multipart/form-data;q=0.1"
+  ],
+  "includePatterns": [],
+  "excludePatterns": [],
+  "disabledValidationRules": []
+}

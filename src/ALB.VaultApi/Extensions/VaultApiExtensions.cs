@@ -1,3 +1,4 @@
+using ALB.Domain.Adapters;
 using ALB.Domain.Options;
 using ALB.VaultApi.Adapters;
 using ALB.VaultApi.Clients;

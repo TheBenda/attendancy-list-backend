@@ -1,3 +1,6 @@
+using ALB.Domain.Adapters;
+using ALB.Domain.Options;
+
 using VaultApi.Client;
 
 namespace ALB.VaultApi.Adapters;
@@ -54,12 +57,4 @@ public class GraphApiCredentials
     public required string Email { get; init; }
     public required string Password { get; init; }
     public required string Token { get; init; }
-}
-
-public class MailgunCredentials
-{
-    public required string ApiKey { get; init; }
-    public required string Domain { get; init; }
-    public required string BaseUrl { get; init; }
-    
 }

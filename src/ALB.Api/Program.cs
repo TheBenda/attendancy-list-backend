@@ -32,7 +32,8 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 const string viteAppCorsPolicy = "ViteAppCorsPolicy";
-if (builder.Environment.EnvironmentName != "Test")
+var envName = builder.Environment.EnvironmentName;
+if (envName != "Test")
 {
     var viteAppUrl = builder.Configuration
         .GetRequiredSection("VITE_APP_HTTP")
@@ -54,7 +55,7 @@ if (builder.Environment.EnvironmentName != "Test")
 }
 
 
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration, envName);
 
 builder.Services.AddProblemDetails(options =>
 {

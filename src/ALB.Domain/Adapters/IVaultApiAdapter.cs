@@ -1,7 +1,8 @@
-namespace ALB.VaultApi.Adapters;
+using ALB.Domain.Options;
+
+namespace ALB.Domain.Adapters;
 
 public interface IVaultApiAdapter
 {
-    Task<GraphApiCredentials> GetToken();
     Task<MailgunCredentials> GetMailgunCredentials();
 }

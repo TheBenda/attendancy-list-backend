@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ALB.Domain\ALB.Domain.csproj" />
+        <ProjectReference Include="..\ALB.MailgunApi\ALB.MailgunApi.csproj" />
         <ProjectReference Include="..\ALB.VaultApi\ALB.VaultApi.csproj" />
     </ItemGroup>
 
