@@ -4,6 +4,8 @@ using ALB.Domain.Values;
 using ALB.Infrastructure.Persistence;
 using ALB.Infrastructure.Persistence.Repositories;
 using ALB.Infrastructure.Services;
+using ALB.MailgunApi.Extensions;
+using ALB.VaultApi.Extensions;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,8 +23,14 @@ public static class InfrastructureExtension
         return services;
     }
 
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, string environmentName)
     {
+        if (environmentName != "Test")
+        {
+            services.AddVaultApiAdapter(configuration);
+            services.AddMailgunApi();
+        }
+        
         services.AddHostedService<PowerUserSeederService>();
 
         services.AddScoped<IChildRepository, ChildRepository>();

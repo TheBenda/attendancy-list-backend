@@ -17,6 +17,7 @@ internal static class UserEndpointsGroup
             .MapGetChildrenOfGuardianEndpoint()
             .MapUpdateUserEndpoint()
             .MapRemoveUserRoleEndpoint()
+            .MapInviteUserEndpoint()
             .MapAddUserRoleEndpoint();
     }
 }

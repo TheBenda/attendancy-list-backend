@@ -1,0 +1,1036 @@
+openapi: 3.1.0
+info:
+  title: Mailgun API
+  description: Mailgun API defined by OpenAPI Specification (OAS) 3.1.0
+  version: 3.0.0
+servers:
+  - url: https://api.mailgun.net
+    description: US Mailgun
+paths:
+  /v3/{domain_name}/messages:
+    post:
+      operationId: POST-v3--domain-name--messages
+      summary: Send an email
+      description: "Pass the components of the messages such as To, From, Subject, HTML, text parts, attachments, etc. Mailgun will build a MIME representation of the message and send it. In order to send you must provide one of the following parameters: 'text', 'html', 'amp-html' or 'template'. Important: Send options (parameters starting with o:, h:, v:, or t:) are limited to 16KB total"
+      parameters:
+        - name: domain_name
+          in: path
+          description: Domain name used to send the message
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/POST-v3-domain_name-messages-multipart-form-data-RequestBody'
+      responses:
+        '200':
+          description: A 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-influx-httpapi-SendMessageResponse'
+              examples:
+                Example:
+                  value:
+                    id: message-id
+                    message: Queued. Thank you.
+        '400':
+          description: A 400 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-influx-httpapi-GetMessageResponseNotFound'
+              examples:
+                Example:
+                  value:
+                    message: A simple message describing the issue - A few examples:'to parameter is not a valid address. please check documentation.' 'Only one parameters 'html' or 'template' is allowed.' 'Need at least one of 'text', 'html', 'amp-html' or 'template' parameters specified.' 'from parameter is missing. ''Send options (parameters starting with o:, h:, or v:) are limited to 16KB total'
+        '401':
+          description: A 401 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/string'
+              examples:
+                Example:
+                  value: Forbidden
+        '429':
+          description: A 429 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-influx-httpapi-GetMessageResponseNotFound'
+              examples:
+                Example:
+                  value:
+                    message: 'Domain example.com is not allowed to send: account-requests-per-sec limit exceeded, try again after 120 seconds'
+        '500':
+          description: A 500 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-influx-httpapi-GetMessageResponseNotFound'
+              examples:
+                Example:
+                  value:
+                    message: Internal Server Error
+      security:
+        - basicAuth: []
+      tags:
+        - Messages
+  /v3/{domain_name}/messages.mime:
+    post:
+      operationId: POST-v3--domain-name--messages-mime
+      summary: Send an email in MIME format
+      description: 'Build a MIME string yourself using a MIME library and submit it to Mailgun. Important: Send options (parameters starting with o:, h:, v:, or t:) are limited to 16KB total'
+      parameters:
+        - name: domain_name
+          in: path
+          description: Domain name used to send the message
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/POST-v3-domain_name-messages-mime-multipart-form-data-RequestBody'
+      responses:
+        '200':
+          description: A 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-influx-httpapi-SendMessageResponse'
+              examples:
+                Example:
+                  value:
+                    id: message-id
+                    message: Queued. Thank you.
+        '400':
+          description: A 400 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-influx-httpapi-GetMessageResponseNotFound'
+              examples:
+                Example:
+                  value:
+                    message: A simple message describing the issue - A few examples:'to parameter is not a valid address. please check documentation.' 'Only one parameters 'html' or 'template' is allowed.' 'Need at least one of 'text', 'html', 'amp-html' or 'template' parameters specified.' 'from parameter is missing. ''Send options (parameters starting with o:, h:, or v:) are limited to 16KB total'
+        '401':
+          description: A 401 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/string'
+              examples:
+                Example:
+                  value: Forbidden
+        '429':
+          description: A 429 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-influx-httpapi-GetMessageResponseNotFound'
+              examples:
+                Example:
+                  value:
+                    message: 'Domain example.com is not allowed to send: account-requests-per-sec limit exceeded, try again after 120 seconds'
+        '500':
+          description: A 500 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-influx-httpapi-GetMessageResponseNotFound'
+              examples:
+                Example:
+                  value:
+                    message: Internal Server Error
+      security:
+        - basicAuth: []
+      tags:
+        - Messages
+  /v3/domains/{domain_name}/messages/{storage_key}:
+    get:
+      operationId: GET-v3-domains--domain-name--messages--storage-key-
+      summary: Retrieve a stored email
+      description: Event(s) created from sending an email with Mailgun will contain a `storage.key` to use to retrieve the email.
+      parameters:
+        - name: domain_name
+          in: path
+          description: Domain name that was used to send the email
+          required: true
+          schema:
+            type: string
+        - name: storage_key
+          in: path
+          description: "Storage key from the email's associated events (Example: Accepted/Delivered events `storage.key` field). Note: Storage keys are available for the duration of your domain's message retention policy."
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-influx-httpapi-GetMessageResponseBasicExample'
+              examples:
+                Example:
+                  value:
+                    Content-Transfer-Encoding: 7bit
+                    Content-Type: multipart/form-data; boundary=----SomeFormBoundaryABC123
+                    From: foo.bar@my-domain.com
+                    Message-Id: <xxxxxxxxxxxxx.111111111111111@my-domain.com>
+                    Mime-Version: '1.0'
+                    Subject: '"Mailgun is awesome"'
+                    To: Cool Bar <cool.barr@cool.com>, bar.baz@gmail.com
+                    X-Mailgun-Tag: Earth
+                    sender: foo.bar@my-domain.com
+                    recipients: cool.barr@cool.com, bar.baz@gmail.com
+                    body-html: <html>This is some html</html>
+                    body-plain: This is some html
+                    stripped-html: <html>This is some html</html>
+                    stripped-text: This is some html
+                    stripped-signature: the signature block stripped from the plain text message (if found)
+                    message-headers:
+                      - - Mime-Version
+                        - '1.0'
+                      - - Subject
+                        - '"Mailgun is awesome"'
+                      - - From
+                        - foo.bar@my-domain.com
+                      - - To
+                        - cool.barr@cool.com, bar.baz@gmail.com
+                      - - X-Mailgun-Tag
+                        - Earth
+                      - - Message-Id
+                        - <xxxxxxxxxxxxx.111111111111111@my-domain.com>
+                      - - Content-Transfer-Encoding
+                        - 7bit
+                      - - Content-Type
+                        - text/html; charset=ascii
+                    X-Mailgun-Template-Name: my-awesome-template
+                    X-Mailgun-Template-Variables: '{"name":"Foo","phrase":"Bar"}'
+        '400':
+          description: A 400 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-influx-httpapi-GetMessageResponseBadRequest'
+        '404':
+          description: A 404 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-influx-httpapi-GetMessageResponseNotFound'
+              examples:
+                Example:
+                  value:
+                    message: Message not found
+      security:
+        - basicAuth: []
+      tags:
+        - Messages
+    post:
+      operationId: POST-v3-domains--domain-name--messages--storage-key-
+      summary: Resend an email
+      parameters:
+        - name: domain_name
+          in: path
+          description: Domain name used to send the message
+          required: true
+          schema:
+            type: string
+        - name: storage_key
+          in: path
+          description: "Storage key from the email's associated events (Example: Accepted/Delivered events `storage.key` field). Note: Storage keys are available for the duration of your domain's message retention policy."
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/POST-v3-domains-domain_name-messages-storage_key-multipart-form-data-RequestBody'
+      responses:
+        '200':
+          description: A 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-influx-httpapi-SendMessageResponse'
+              examples:
+                Example:
+                  value:
+                    id: message-id
+                    message: Queued. Thank you.
+      security:
+        - basicAuth: []
+      tags:
+        - Messages
+  /v3/domains/{name}/sending_queues:
+    get:
+      operationId: GET-v3-domains--name--sending-queues
+      summary: Get messages queue status
+      description: Provides default and scheduled message queue information.
+      parameters:
+        - name: name
+          in: path
+          description: The name of the domain you want get sending queues from
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-domains-httpapi-GetDomainSendingQueuesResp'
+              examples:
+                Example:
+                  value:
+                    regular:
+                      is_disabled: true
+                      disabled:
+                        until: Mon, 02 Jan 2006 15:04:05 MST
+                        reason: You have too many messages in queue
+                    scheduled:
+                      is_disabled: true
+                      disabled:
+                        until: Mon, 02 Jan 2006 15:04:05 MST
+                        reason: You have too many messages in queue
+        '401':
+          description: A 401 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-scaffold-httpapi-GenericResponse'
+              examples:
+                Example:
+                  value:
+                    message: Invalid private key
+        '404':
+          description: A 404 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-scaffold-httpapi-GenericResponse'
+              examples:
+                Example:
+                  value:
+                    message: Domain not found
+      security:
+        - basicAuth: []
+      tags:
+        - Messages
+  /v3/{domain_name}/envelopes:
+    delete:
+      operationId: DELETE-v3--domain-name--envelopes
+      summary: Delete scheduled and undelivered mail
+      description: |-
+        Deletes all scheduled and undelivered mail from the domain queue.  This endpoint must be called on the same storage API host as the mail's generated storage URL.  e.g. https://storage-us-east4.api.mailgun.net/v3/example.com/envelopes
+
+        The storage hosts are: `storage-us-east4.api.mailgun.net`, `storage-us-west1.api.mailgun.net`, and `storage-europe-west1.api.mailgun.net`.
+      parameters:
+        - name: domain_name
+          in: path
+          description: The name of the domain you want to delete envelope from
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-scaffold-httpapi-GenericResponse'
+              examples:
+                Example:
+                  value:
+                    message: done
+        '401':
+          description: A 401 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-scaffold-httpapi-GenericResponse'
+              examples:
+                Example:
+                  value:
+                    message: Invalid private key
+        '404':
+          description: A 404 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/github.com-mailgun-scaffold-httpapi-GenericResponse'
+              examples:
+                Example:
+                  value:
+                    message: domain not found
+      security:
+        - basicAuth: []
+      tags:
+        - Messages
+components:
+  schemas:
+    github.com-mailgun-influx-httpapi-SendMessageResponse:
+      type: object
+      properties:
+        id:
+          description: The unique identifier of the message as defined by [RFC-2392](https://datatracker.ietf.org/doc/html/rfc2392).
+          type: string
+        message:
+          description: A success message
+          type: string
+      required:
+        - id
+        - message
+    github.com-mailgun-influx-httpapi-GetMessageResponseNotFound:
+      type: object
+      properties:
+        message:
+          description: A failure message
+          type: string
+      required:
+        - message
+    string:
+      type: string
+    POST-v3-domain_name-messages-multipart-form-data-RequestBody:
+      type: object
+      properties:
+        from:
+          description: 'Email address of the `From` header. Can include a friendly name using the format `"Friendly Name <email@domain.com>"`. Note: not required if sending with a template that has a pre-set From header, but will override the template''s From header if provided.'
+          type: string
+        to:
+          description: 'Email address of the recipient(s). Supports friendly name format. Example: `"Bob <bob@host.com>"`. Use commas to separate multiple recipients. Duplicate addresses are automatically ignored.'
+          type: array
+          items:
+            type: string
+        cc:
+          description: Same as `to` but for carbon copy recipients. Supports friendly name format.
+          type: array
+          items:
+            type: string
+        bcc:
+          description: Same as `to` but for blind carbon copy recipients. Supports friendly name format.
+          type: array
+          items:
+            type: string
+        subject:
+          description: 'Message subject. Note: not required if sending with a template that has a pre-set Subject header, but it will override it if provided.'
+          type: string
+        text:
+          description: Body of the message (text version)
+          type: string
+        html:
+          description: Body of the message (HTML version)
+          type: string
+        amp-html:
+          description: AMP part of the message.  Please follow Google guidelines to compose and send AMP emails
+          type: string
+        attachment:
+          description: File attachment.  You can post multiple `attachment` values.  **Important:** You must use `multipart/form-data` encoding for sending attachments
+          type: array
+          items:
+            type: string
+            format: binary
+        inline:
+          description: Attachment with `inline` disposition.  Can be used to send inline images (see example). You can post multiple `inline` values
+          type: array
+          items:
+            type: string
+            format: binary
+          format: binary
+        template:
+          description: Name of a template stored via the Templates API to use to render the email body. See [Templates](https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/send-templates) for more information
+          type: string
+        t:version:
+          description: Render a specific version of the given template instead of the latest version. `template` option must also be provided.
+          type: string
+        t:text:
+          description: Generates a plain text version of the template alongside the HTML version when sending templated emails. When set to 'yes', instructs Mailgun to create a text/plain MIME part based on the template content, ensuring compatibility with email clients that don't support HTML or have HTML rendering disabled. This improves email deliverability and accessibility by providing a fallback text version in multipart emails.
+          type: string
+          enum:
+            - yes
+          x-enumDescriptions:
+            yes: Render template in the text part of the message
+        t:variables:
+          description: A valid JSON-encoded dictionary used as the input for template variable expansion.  See [Templates](https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/send-templates) for more information
+          type: string
+        o:tag:
+          description: Tag string.  See [Tagging](https://documentation.mailgun.com/docs/mailgun/user-manual/tracking-messages/track-tagging) for more information
+          type: array
+          items:
+            type: string
+        o:dkim:
+          description: Enables or disables DKIM signatures on a per-message basis. Overrides the domain-level DKIM setting for this specific message.
+          type: string
+          enum:
+            - yes
+            - no
+            - 'true'
+            - 'false'
+          x-enumDescriptions:
+            yes: Enables DKIM signatures
+            no: Disable DKIM signatures
+            'true': Enables DKIM signatures
+            'false': Disable DKIM signatures
+        o:secondary-dkim:
+          description: 'Specify a second domain key to sign the email with. The value is formatted as `signing_domain/selector`, e.g. `example.com/s1`. This tells Mailgun to sign the message with the signing domain `example.com` using the selector `s1`. Note: the domain key specified must have been previously created and activated.'
+          type: string
+        o:secondary-dkim-public:
+          description: 'Specify an alias of the domain key specified in `o:secondary-dkim`. Also formatted as `public_signing_domain/selector`. `o:secondary-dkim` option must also be provided. Mailgun will sign the message with the provided key of the secondary DKIM, but use the public secondary DKIM name and selector. Note: We will perform a DNS check prior to signing the message to ensure the public keys matches the secondary DKIM.'
+          type: string
+        o:deliverytime:
+          description: "Specifies the scheduled delivery time in [RFC-2822 format](https://documentation.mailgun.com/docs/mailgun/api-reference/api-overview#date-format). Depending on your plan, you can schedule messages up to 3 or 7 days in advance. If your domain has a custom message_ttl (time-to-live) setting, this value determines the maximum scheduling duration. Example: 'Fri, 14 Oct 2011 12:00:00 +0000'"
+          type: string
+        o:deliver-within:
+          description: Specifies the maximum time window for delivering the message. Accepts values in format `[0-9]+h[0-9]+m` (e.g., `1h30m`, `30m`, `24h`), with a minimum of `5m` and maximum of `24h`. For scheduled messages, the delivery window starts from the scheduled time. The standard retry schedule applies within this window, so shorter timeframes may result in fewer delivery attempts.
+          type: string
+        o:deliverytime-optimize-period:
+          description: Toggles Send Time Optimization (STO) on a per-message basis.  String should be set to the number of hours in `[0-9]+h` format, with the minimum being `24h` and the maximum being `72h`.  This value defines the time window in which Mailgun will run the optimization algorithm based on prior engagement data of a given recipient. See [Sending a Message with STO](https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/send-sto) for details. *Please note that STO is only available on certain plans. See www.mailgun.com/pricing for more info*
+          type: string
+        o:time-zone-localize:
+          description: Toggles Timezone Optimization (TZO) on a per message basis. String should be set to preferred delivery time in `HH:mm` or `hh:mmaa` format, where `HH:mm` is used for 24 hour format without AM/PM and hh:mmaa is used for 12 hour format with AM/PM. See [Sending a Message with TZO](https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/send-tzo) for details. *Please note that TZO is only available on certain plans. See www.mailgun.com/pricing for more info*
+          type: string
+        o:testmode:
+          description: Enables sending in test mode. Messages are processed normally but not actually delivered to recipients. Useful for testing without sending real emails. See [Sending in Test Mode](https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/test-mode)
+          type: string
+          enum:
+            - yes
+          x-enumDescriptions:
+            yes: Send in test mode
+        o:tracking:
+          description: Toggles both click and open tracking on a per-message basis
+          type: string
+          enum:
+            - yes
+            - no
+            - 'true'
+            - 'false'
+            - htmlonly
+          x-enumDescriptions:
+            yes: Enable tracking on a per-message basis
+            no: Disable tracking on a per-message basis
+            'true': Enable tracking on a per-message basis
+            'false': Disable tracking on a per-message basis
+            htmlonly: Use if you only want links rewritten in the HTML part of the message
+        o:tracking-clicks:
+          description: Toggles click tracking on a per-message basis, see [Tracking Clicks](https://documentation.mailgun.com/docs/mailgun/user-manual/tracking-messages/tracking-clicks).  This overrides the domain-level click tracking setting.
+          type: string
+          enum:
+            - yes
+            - no
+            - 'true'
+            - 'false'
+            - htmlonly
+          x-enumDescriptions:
+            yes: Enable tracking on a per-message basis
+            no: Disable tracking on a per-message basis
+            'true': Enable tracking on a per-message basis
+            'false': Disable tracking on a per-message basis
+            htmlonly: Use if you only want links rewritten in the HTML part of the message
+        o:tracking-opens:
+          description: Toggles opens tracking on a per-message basis, see [Tracking Opens](https://documentation.mailgun.com/docs/mailgun/user-manual/tracking-messages/tracking-opens).  Has higher priority than domain-level setting.
+          type: string
+          enum:
+            - yes
+            - no
+            - 'true'
+            - 'false'
+          x-enumDescriptions:
+            yes: Enables opens tracking
+            no: Disable opens tracking
+            'true': Enables opens tracking
+            'false': Disable opens tracking
+        o:require-tls:
+          description: When set to 'yes', requires the message to be sent only over a TLS connection to the Email Service Provider. If TLS cannot be established, the message will not be delivered. When set to 'no' (default), Mailgun attempts TLS but falls back to plaintext SMTP if needed.
+          type: string
+          enum:
+            - yes
+            - no
+            - 'true'
+            - 'false'
+          x-enumDescriptions:
+            yes: Message only be sent over a TLS connection
+            no: Message do not require to be sent over a TLS connection
+            'true': Message only be sent over a TLS connection
+            'false': Message do not require to be sent over a TLS connection
+        o:skip-verification:
+          description: If `true`, the certificate and hostname of the resolved MX Host will not be verified when trying to establish a TLS connection. If `false`, Mailgun will verify the certificate and hostname. If either one can not be verified, a TLS connection will not be established. The default is `false`
+          type: string
+          enum:
+            - yes
+            - no
+            - 'true'
+            - 'false'
+          x-enumDescriptions:
+            yes: Verification skipped
+            no: Verification active
+            'true': Verification skipped
+            'false': Verification active
+        o:sending-ip:
+          description: Used to specify an IP Address to send an email that is owned by your account
+          type: string
+        o:sending-ip-pool:
+          description: If an IP Pool ID is provided, the email will be delivered with an IP that belongs in that pool
+          type: string
+        o:tracking-pixel-location-top:
+          description: Places the tracking pixel at the top of emails instead of the bottom. Useful for long emails that may be truncated or have rendering issues, ensuring open tracking works accurately.
+          type: string
+          enum:
+            - yes
+            - no
+            - 'true'
+            - 'false'
+            - htmlonly
+          x-enumDescriptions:
+            yes: Enables tracking
+            no: Disable tracking
+            'true': Enables tracking
+            'false': Disable tracking
+            htmlonly: Use if you only want links rewritten in the HTML part of the message
+        o:archive-to:
+          description: "Sends a copy of successfully delivered messages to the specified URL via HTTP POST. The request uses Content-Type: application/mime and contains the exact message the recipient's SMTP server received. NOTE: These are accounted for and billed as delivered messages"
+          type: string
+        o:suppress-headers:
+          description: "Removes specified X-Mailgun headers from the delivered message. Provide header names separated by commas (e.g., 'X-Mailgun-Variables,X-Mailgun-Tag') or use 'all' to remove all X-Mailgun headers.Note: X-Mailgun-Sid header is currently used to process complains received via feedback loops."
+          type: string
+        h:X-My-Header:
+          description: "Adds custom headers to the email. Use 'h:' prefix followed by header name and value. Example: 'h:X-Custom-Header=my-value'"
+          type: string
+        v:my-var:
+          description: "Attaches custom data to the message using the 'v:' prefix followed by a variable name. When sending with templates, provides values for template variable substitution (overridden by 't:variables' if both are provided). When not using templates, treated as metadata and included in events/webhooks. Variables are visible in the delivered email's X-Mailgun-Variables header. Example: 'v:user-id=123'. NOTE: Anything over 4KB will be truncated in the event/webhooks."
+          type: string
+        recipient-variables:
+          description: 'A JSON-encoded dictionary for batch sending with personalized variables per recipient. Each key is a recipient email address, each value is a dictionary of variables for that recipient. Variables can be referenced in the message using %recipient.variablename%. Example: ''{"alice@example.com": {"name":"Alice", "id":1}, "bob@example.com": {"name":"Bob", "id":2}}''. Maximum 1,000 recipients per batch. See [Batch Sending](https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/batch-sending) for more information'
+          type: string
+      additionalProperties: true
+      required:
+        - from
+        - to
+        - subject
+    POST-v3-domain_name-messages-mime-multipart-form-data-RequestBody:
+      type: object
+      properties:
+        to:
+          description: 'Email address of the recipient(s). Supports friendly name format. Example: `"Bob <bob@host.com>"`. Use commas to separate multiple recipients. Duplicate addresses are automatically ignored.'
+          type: array
+          items:
+            type: string
+        message:
+          description: MIME string of the message.  Make sure to use `multipart/form-data` content type to send this as a file upload
+          type: string
+          format: binary
+        template:
+          description: Name of a template stored via template API to use to render the email body. See [Templates](https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/send-templates) for more information
+          type: string
+        t:version:
+          description: Render a specific version of the given template instead of the latest version. `template` option must also be provided.
+          type: string
+        t:text:
+          description: Generates a plain text version of the template alongside the HTML version when sending templated emails. When set to 'yes', instructs Mailgun to create a text/plain MIME part based on the template content, ensuring compatibility with email clients that don't support HTML or have HTML rendering disabled. This improves email deliverability and accessibility by providing a fallback text version in multipart emails.
+          type: string
+          enum:
+            - yes
+          x-enumDescriptions:
+            yes: Render template in the text part of the message
+        t:variables:
+          description: A valid JSON-encoded dictionary used as the input for template variable expansion. See [Templates](https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/send-templates) for more information
+          type: string
+        o:tag:
+          description: Tag string.  See [Tags](https://documentation.mailgun.com/docs/mailgun/user-manual/tracking-messages/track-tagging) for more information
+          type: array
+          items:
+            type: string
+        o:dkim:
+          description: Enables or disables DKIM signatures on a per-message basis. Overrides the domain-level DKIM setting for this specific message.
+          type: string
+          enum:
+            - yes
+            - no
+            - 'true'
+            - 'false'
+          x-enumDescriptions:
+            yes: Enables DKIM signatures
+            no: Disable DKIM signatures
+            'true': Enables DKIM signatures
+            'false': Disable DKIM signatures
+        o:secondary-dkim:
+          description: 'Specify a second domain key to sign the email with. The value is formatted as `signing_domain/selector`, e.g. `example.com/s1`. This tells Mailgun to sign the message with the signing domain `example.com` using the selector `s1`. Note: the domain key specified must have been previously created and activated.'
+          type: string
+        o:secondary-dkim-public:
+          description: 'Specify an alias of the domain key specified in `o:secondary-dkim`. Also formatted as `public_signing_domain/selector`. `o:secondary-dkim` option must also be provided. Mailgun will sign the message with the provided key of the secondary DKIM, but use the public secondary DKIM name and selector. Note: We will perform a DNS check prior to signing the message to ensure the public keys matches the secondary DKIM.'
+          type: string
+        o:deliverytime:
+          description: "Specifies the scheduled delivery time in [RFC-2822 format](https://documentation.mailgun.com/docs/mailgun/api-reference/api-overview#date-format). Depending on your plan, you can schedule messages up to 3 or 7 days in advance. If your domain has a custom message_ttl (time-to-live) setting, this value determines the maximum scheduling duration. Example: 'Fri, 14 Oct 2011 12:00:00 +0000'"
+          type: string
+        o:deliver-within:
+          description: Specifies the maximum time window for delivering the message. Accepts values in format `[0-9]+h[0-9]+m` (e.g., `1h30m`, `30m`, `24h`), with a minimum of `5m` and maximum of `24h`. For scheduled messages, the delivery window starts from the scheduled time. The standard retry schedule applies within this window, so shorter timeframes may result in fewer delivery attempts.
+          type: string
+        o:deliverytime-optimize-period:
+          description: Toggles Send Time Optimization (STO) on a per-message basis.  String should be set to the number of hours in `[0-9]+h` format, with the minimum being `24h` and the maximum being `72h`.  This value defines the time window in which Mailgun will run the optimization algorithm based on prior engagement data of a given recipient.  See [Sending a Message with STO](https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/send-sto) for details. *Please note that STO is only available on certain plans. See www.mailgun.com/pricing for more info*
+          type: string
+        o:time-zone-localize:
+          description: Toggles Timezone Optimization (TZO) on a per message basis. String should be set to preferred delivery time in `HH:mm` or `hh:mmaa` format, where `HH:mm` is used for 24 hour format without AM/PM and hh:mmaa is used for 12 hour format with AM/PM. See [Sending a Message with TZO](https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/send-tzo) for details.  *Please note that TZO is only available on certain plans. See www.mailgun.com/pricing for more info*
+          type: string
+        o:testmode:
+          description: Enables sending in test mode. Messages are processed normally but not actually delivered to recipients. Useful for testing without sending real emails. See [Sending in Test Mode](https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/test-mode)
+          type: string
+          enum:
+            - yes
+          x-enumDescriptions:
+            yes: Send in test mode
+        o:tracking:
+          description: Toggles both click and open tracking on a per-message basis, see [Tracking Messages](https://documentation.mailgun.com/docs/mailgun/user-manual/tracking-messages) for details.
+          type: string
+          enum:
+            - yes
+            - no
+            - 'true'
+            - 'false'
+            - htmlonly
+          x-enumDescriptions:
+            yes: Enable tracking on a per-message basis
+            no: Disable tracking on a per-message basis
+            'true': Enable tracking on a per-message basis
+            'false': Disable tracking on a per-message basis
+            htmlonly: Use if you only want links rewritten in the HTML part of the message
+        o:tracking-clicks:
+          description: Toggles click tracking on a per-message basis, see [Tracking Clicks](https://documentation.mailgun.com/docs/mailgun/user-manual/tracking-messages/tracking-clicks).  This overrides the domain-level click tracking setting
+          type: string
+          enum:
+            - yes
+            - no
+            - 'true'
+            - 'false'
+            - htmlonly
+          x-enumDescriptions:
+            yes: Enable tracking on a per-message basis
+            no: Disable tracking on a per-message basis
+            'true': Enable tracking on a per-message basis
+            'false': Disable tracking on a per-message basis
+            htmlonly: Use if you only want links rewritten in the HTML part of the message
+        o:tracking-opens:
+          description: Toggles opens tracking on a per-message basis, see [Tracking Opens](https://documentation.mailgun.com/docs/mailgun/user-manual/tracking-messages/tracking-opens). Has higher priority than domain-level setting.
+          type: string
+          enum:
+            - yes
+            - no
+            - 'true'
+            - 'false'
+          x-enumDescriptions:
+            yes: Enables opens tracking
+            no: Disable opens tracking
+            'true': Enables opens tracking
+            'false': Disable opens tracking
+        o:require-tls:
+          description: When set to 'yes', requires the message to be sent only over a TLS connection. If TLS cannot be established, the message will not be delivered. When set to 'no' (default), Mailgun attempts TLS but falls back to plaintext SMTP if needed.
+          type: string
+          enum:
+            - yes
+            - no
+            - 'true'
+            - 'false'
+          x-enumDescriptions:
+            yes: Message only be sent over a TLS connection
+            no: Message do not require to be sent over a TLS connection
+            'true': Message only be sent over a TLS connection
+            'false': Message do not require to be sent over a TLS connection
+        o:skip-verification:
+          description: When set to 'true', skips certificate and hostname verification for TLS connections. When 'false' (default), Mailgun verifies certificates and hostnames - if verification fails, TLS connection is not established.
+          type: string
+          enum:
+            - yes
+            - no
+            - 'true'
+            - 'false'
+          x-enumDescriptions:
+            yes: Verification skipped
+            no: Verification active
+            'true': Verification skipped
+            'false': Verification active
+        o:sending-ip:
+          description: Used to specify an IP Address to send an email that is owned by your account
+          type: string
+        o:sending-ip-pool:
+          description: If an IP Pool ID is provided, the email will be delivered with an IP that belongs in that pool
+          type: string
+        o:tracking-pixel-location-top:
+          description: Places the tracking pixel at the top of emails instead of the bottom. Useful for long emails that may be truncated or have rendering issues, ensuring open tracking works accurately.
+          type: string
+          enum:
+            - yes
+            - no
+            - 'true'
+            - 'false'
+            - htmlonly
+          x-enumDescriptions:
+            yes: Enables tracking
+            no: Disable tracking
+            'true': Enables tracking
+            'false': Disable tracking
+            htmlonly: Use if you only want links rewritten in the HTML part of the message
+        o:archive-to:
+          description: "Sends a copy of successfully delivered messages to the specified URL via HTTP POST. The request uses Content-Type: application/mime and contains the exact message the recipient's SMTP server received. NOTE: These are accounted for and billed as delivered messages"
+          type: string
+        o:suppress-headers:
+          description: "Removes specified X-Mailgun headers from the delivered message. Provide header names separated by commas (e.g., 'X-Mailgun-Variables,X-Mailgun-Tag') or use 'all' to remove all X-Mailgun headers.Note: X-Mailgun-Sid header is currently used to process complains received via feedback loops."
+          type: string
+        h:X-My-Header:
+          description: "Adds custom headers to the email. Use 'h:' prefix followed by header name and value. Example: 'h:X-Custom-Header=my-value'"
+          type: string
+        v:my-var:
+          description: "Attaches custom data to the message using the 'v:' prefix followed by a variable name. When sending with templates, provides values for template variable substitution (overridden by 't:variables' if both are provided). When not using templates, treated as metadata and included in events/webhooks. Variables are visible in the delivered email's X-Mailgun-Variables header. Example: 'v:user-id=123'.NOTE: Anything over 4KB will be truncated in the event/webhooks"
+          type: string
+        recipient-variables:
+          description: 'A JSON-encoded dictionary for batch sending with personalized variables per recipient. Each key is a recipient email address, each value is a dictionary of variables for that recipient. Variables can be referenced in the message using %recipient.variablename%. Example: ''{"alice@example.com": {"name":"Alice", "id":1}, "bob@example.com": {"name":"Bob", "id":2}}''. Maximum 1,000 recipients per batch. See [Batch Sending](https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/batch-sending) for more information.'
+          type: string
+      additionalProperties: true
+      required:
+        - to
+        - message
+    POST-v3-domains-domain_name-messages-storage_key-multipart-form-data-RequestBody:
+      type: object
+      properties:
+        to:
+          description: 'Email address of the recipient(s). Supports friendly name format. Example: `"Bob <bob@host.com>"`. Use commas to separate multiple recipients. Duplicate addresses are automatically ignored.'
+          type: string
+      required:
+        - to
+    github.com-mailgun-influx-httpapi-GetMessageResponseBasicExample:
+      type: object
+      properties:
+        Content-Transfer-Encoding:
+          description: The content transfer encoding if enabled
+          type: string
+        Content-Type:
+          description: The content type sent with the message with a possible boundary
+          type: string
+        From:
+          description: The full 'From' email address entry of the email
+          type: string
+        Message-Id:
+          description: The unique identifier of the message as defined by [RFC-2392](https://datatracker.ietf.org/doc/html/rfc2392)
+          type: string
+        Mime-Version:
+          description: The MIME version of the email
+          type: string
+        Subject:
+          description: Subject of the email
+          type: string
+        To:
+          description: The full 'To' email address entries
+          type: string
+        X-Mailgun-Tag:
+          description: The raw tags of the message if provided
+          type: string
+        sender:
+          description: Just the email address from the provided 'From'' field
+          type: string
+        recipients:
+          description: A list of email addresses from the 'To'' field
+          type: string
+        body-html:
+          description: The full HTML body of the full message
+          type: string
+        body-plain:
+          description: The plain text body of the full message
+          type: string
+        stripped-html:
+          description: Only the body of the email in HTML
+          type: string
+        stripped-text:
+          description: Only the body of the email in plain text
+          type: string
+        stripped-signature:
+          description: The signature stripped from the body
+          type: string
+        message-headers:
+          description: The full list of headers of the MIME upon send
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+        X-Mailgun-Template-Name:
+          description: The name of the template if one was used
+          type: string
+        X-Mailgun-Template-Variables:
+          description: The variables used in the template if one was used
+          type: string
+      required:
+        - Content-Transfer-Encoding
+        - Content-Type
+        - From
+        - Message-Id
+        - Mime-Version
+        - Subject
+        - To
+        - X-Mailgun-Tag
+        - sender
+        - recipients
+        - body-html
+        - body-plain
+        - stripped-html
+        - stripped-text
+        - stripped-signature
+        - message-headers
+        - X-Mailgun-Template-Name
+        - X-Mailgun-Template-Variables
+    github.com-mailgun-influx-httpapi-GetMessageResponseBadRequest:
+      type: object
+      properties:
+        message:
+          description: A failure message
+          type: string
+      required:
+        - message
+    github.com-mailgun-scaffold-httpapi-GenericResponse:
+      type: object
+      properties:
+        message:
+          description: Response message
+          type: string
+      required:
+        - message
+    github.com-mailgun-domains-httpapi-ExceededQueueQuotaDisabledJSON:
+      type: object
+      properties:
+        until:
+          description: End date in RFC-822 date format
+          type: string
+        reason:
+          description: Cause description
+          type: string
+      required:
+        - until
+        - reason
+    github.com-mailgun-domains-httpapi-ExceededQueueQuotaJSON:
+      type: object
+      properties:
+        is_disabled:
+          description: Flag indicating no new messages are able to be submitted
+          type: boolean
+        disabled:
+          description: Disabled info
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/github.com-mailgun-domains-httpapi-ExceededQueueQuotaDisabledJSON'
+      required:
+        - is_disabled
+    github.com-mailgun-domains-httpapi-GetDomainSendingQueuesResp:
+      type: object
+      properties:
+        regular:
+          description: Message queue response
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/github.com-mailgun-domains-httpapi-ExceededQueueQuotaJSON'
+        scheduled:
+          description: Scheduled message queue response
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/github.com-mailgun-domains-httpapi-ExceededQueueQuotaJSON'
+      required:
+        - regular
+        - scheduled
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic auth using api:YOUR_API_KEY. See [documentation](https://documentation.mailgun.com/docs/mailgun/api-reference/authentication/)
+tags:
+  - name: Messages
+    description: |-
+      Send email two ways via our REST API:
+      1. Send emails using MIME format using a MIME building library
+      2. Submit the individual parts (Text, html, attachments, etc.)
+
+      Reminder: You can also send email via SMTP with Mailgun. Please reference the user manual.
+    x-displayName: Messages
+x-tagGroups:
+  - name: Messages
+    tags:
+      - Messages
+  - name: Domains
+    tags:
+      - Domains
+      - Domain Connection
+      - Domain Keys
+      - Domain Tracking
+      - DKIM Security
+  - name: Webhooks
+    tags:
+      - Account Webhooks
+      - Domain Webhooks
+  - name: Reporting
+    tags:
+      - Metrics
+      - Logs
+      - Bounce Classification
+      - Tags New
+      - Stats
+      - Tags
+      - Events
+  - name: Send Alerts
+    tags:
+      - Send Alerts
+      - Alerts
+  - name: Threshold Limits
+    tags:
+      - Limits
+  - name: Suppressions
+    tags:
+      - Unsubscribe
+      - Complaints
+      - Bounces
+      - Allowlist
+  - name: Receiving
+    tags:
+      - Routes
+      - Forwards
+  - name: Mailing Lists
+    tags:
+      - Mailing Lists
+  - name: Templates
+    tags:
+      - Account Templates
+      - Domain Templates
+  - name: IP Pools
+    tags:
+      - IP Pools
+      - Dynamic IP Pools
+  - name: IPs
+    tags:
+      - IPs
+      - IP Address Warmup
+  - name: Subaccounts
+    tags:
+      - Subaccounts
+  - name: Custom Message Limit
+    tags:
+      - Custom Message Limit
+  - name: Account Management
+    tags:
+      - Account Management
+  - name: Keys
+    tags:
+      - Keys
+  - name: Credentials
+    tags:
+      - Credentials
+  - name: IP Allowlist
+    tags:
+      - IP Allowlist
+  - name: Users
+    tags:
+      - Users

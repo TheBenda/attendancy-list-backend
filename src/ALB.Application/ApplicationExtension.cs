@@ -31,6 +31,12 @@ public static class ApplicationExtension
             .Bind(configuration.GetSection(JwtOptions.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
+        
+        services
+            .AddOptions<VaultOptions>()
+            .Bind(configuration.GetSection(VaultOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         services.AddAuthorizationBuilder()
             .AddPolicy(SystemRoles.AdminPolicy, x => x.RequireRole(SystemRoles.Admin))
