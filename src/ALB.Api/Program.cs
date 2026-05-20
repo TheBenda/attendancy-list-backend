@@ -23,6 +23,7 @@ builder.AddNpgsqlDataSource("postgresdb",
     configureDataSourceBuilder: sourceBuilder => sourceBuilder.UseNodaTime());
 
 builder.AddServiceDefaults();
+builder.Services.AddMemoryCache();
 
 // This is needed to make OpenApi forwarding possible behind aspires reverse proxy.
 builder.Services.Configure<ForwardedHeadersOptions>(options =>

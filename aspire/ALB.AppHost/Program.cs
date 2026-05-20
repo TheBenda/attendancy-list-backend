@@ -4,14 +4,14 @@ using Aspire.Hosting.ApplicationModel;
 var builder = DistributedApplication.CreateBuilder(args);
 
 var vaultToken = builder.AddParameter("vault-token", secret: true);
-//var vaultToken = "dummy-token";
 
+var vaultAddress = "http://127.0.0.1:8200";
 var vault = builder.AddContainer("vault", "hashicorp/vault")
     .WithDockerfile("vault")
     .WithEndpoint(port: 8200, targetPort: 8200, name: "http")
     .WithVolume("vault-data", "/vault/file")
     .WithContainerRuntimeArgs("--cap-add=IPC_LOCK")
-    .WithEnvironment("VAULT_ADDR", "http://127.0.0.1:8200")
+    .WithEnvironment("VAULT_ADDR", vaultAddress)
     .WithLifetime(ContainerLifetime.Persistent);
 
 var postgres = builder.AddPostgres("postgres")
@@ -29,7 +29,7 @@ var api = builder.AddProject<Projects.ALB_Api>("Api")
     .WaitFor(postgresdb)
     .WaitFor(vault)
     .WaitForCompletion(migrationService)
-    .WithEnvironment("Vault__Address", "http://vault:8200")
+    .WithEnvironment("Vault__Address", vaultAddress)
     .WithEnvironment("Vault__Token", vaultToken);
 
 var viteApp = builder.AddViteApp("vite-app", "../../../attendance-list-frontend/")

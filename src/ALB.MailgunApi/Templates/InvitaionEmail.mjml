@@ -1,0 +1,13 @@
+<mjml>
+    <mj-body>
+        <mj-section background-color="#5f9ea0">
+            <mj-column width="40%">
+
+            </mj-column>
+            <mj-column vertical-align="bottom" width="60%">
+
+            </mj-column>
+
+        </mj-section>
+    </mj-body>
+</mjml>

@@ -1,0 +1,10 @@
+filters:
+  unusedComponents:
+    - schemas
+    - responses
+    - parameters
+    - requestBodies
+    - headers
+    - securitySchemes
+    - links
+    - callbacks   

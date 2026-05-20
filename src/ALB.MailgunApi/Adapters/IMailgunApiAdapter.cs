@@ -1,6 +1,8 @@
+using ALB.Domain.Identity;
+
 namespace ALB.MailgunApi.Adapters;
 
 public interface IMailgunApiAdapter
 {
-    Task SendInvitationEmailAsync(string to, string subject, string body);
+    Task<string?> SendInvitationEmailAsync(ApplicationUser receiver, string subject, string body, CancellationToken cancellationToken = default);
 }

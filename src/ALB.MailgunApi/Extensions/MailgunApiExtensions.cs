@@ -10,16 +10,13 @@ namespace ALB.MailgunApi.Extensions;
 
 public static class MailgunApiExtensions
 {
+    internal static string MailgunClient = "MailgunClient";
     public static IServiceCollection AddMailgunApi(this IServiceCollection services)
     {
-        services.AddKiotaHandlers();
-        services.AddTransient<MailgunApiClientFactory>();
-        services.AddHttpClient<MailgunApiClientFactory>((sp, client) =>
+        services.AddHttpClient(MailgunClient, (serviceProvider, client) =>
             {
                 client.BaseAddress = new Uri("https://api.mailgun.net");
-            })
-            .AttachKiotaHandlers()
-            .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+            }).ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
             {
                 PooledConnectionIdleTimeout = TimeSpan.FromMinutes(5)
             })
@@ -34,9 +31,8 @@ public static class MailgunApiExtensions
                 });
             });
 
-        services.AddTransient(sp => sp.GetRequiredService<MailgunApiClientFactory>().GetClient());
-
-        services.AddTransient<IMailgunApiAdapter, MailgunApiAdapter>();
+        services.AddScoped<IMailgunApiAdapter, MailgunApiAdapter>();
+        services.AddScoped<CachedMailgunCredentialsProvider>();
         
         return services;
     }
