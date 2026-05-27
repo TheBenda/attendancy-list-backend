@@ -38,6 +38,10 @@ public static class ApplicationExtension
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services
+            .AddOptions<MailpitOptions>()
+            .Bind(configuration.GetSection(MailpitOptions.SectionName));
+
         services.AddAuthorizationBuilder()
             .AddPolicy(SystemRoles.AdminPolicy, x => x.RequireRole(SystemRoles.Admin))
             .AddPolicy(SystemRoles.CoAdminPolicy, x => x.RequireRole(SystemRoles.CoAdmin))

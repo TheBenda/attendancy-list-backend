@@ -3,6 +3,8 @@
 This repository is a .NET 10 Minimal API backend using EF Core, PostgreSQL, and .NET Aspire.
 
 ## 🛠️ Core Commands
+- **Solution** The project uses the new .slnx format
+- **Add dependencies** Always add dependencies using the dotnet cli to ensure no conflicts with centralized package managers
 - **Run API:** `dotnet run --project src/ALB.Api/ALB.Api.csproj`
 - **Run Integration Tests:** `dotnet test tests/ApiIntegrationTests/ApiIntegrationTests/ApiIntegrationTests.csproj -e ASPNETCORE_ENVIRONMENT=Test`
   - *Note:* Docker MUST be running locally (uses `Testcontainers.PostgreSql`).

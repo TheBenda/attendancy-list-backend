@@ -22,15 +22,15 @@ public class MailgunApiAdapter: IMailgunApiAdapter
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly CachedMailgunCredentialsProvider _credentialsProvider;
-    private readonly IConfiguration _configuration;
     private readonly ILogger<MailgunApiAdapter> _logger;
+    private readonly EmailBodyGenerator _emailBodyGenerator;
 
-    public MailgunApiAdapter(IHttpClientFactory httpClientFactory, CachedMailgunCredentialsProvider credentialsProvider, IConfiguration configuration, ILogger<MailgunApiAdapter> logger)
+    public MailgunApiAdapter(IHttpClientFactory httpClientFactory, CachedMailgunCredentialsProvider credentialsProvider, ILogger<MailgunApiAdapter> logger, EmailBodyGenerator emailBodyGenerator)
     {
         _httpClientFactory = httpClientFactory;
         _credentialsProvider = credentialsProvider;
-        _configuration = configuration;
         _logger = logger;
+        _emailBodyGenerator = emailBodyGenerator;
     }
     
     /// <summary>
@@ -51,9 +51,9 @@ public class MailgunApiAdapter: IMailgunApiAdapter
         
         var message = new MimeMessage();
 
-        var inviteLink = GenerateInvitationLink(receiver.Token);
-        var html = await RenderInvitationEmailHtmlAsync(receiver, inviteLink, ct);
-        var text = GenerateInvitationEmailText(receiver, inviteLink);
+        var inviteLink = _emailBodyGenerator.GenerateInvitationLink(receiver.Token);
+        var html = await _emailBodyGenerator.RenderInvitationEmailHtmlAsync(receiver, inviteLink, ct);
+        var text = _emailBodyGenerator.GenerateInvitationEmailText(receiver, inviteLink);
 
         message.From.Add(new MailboxAddress("Attendance List", $"postmaster@{credentials.Domain}"));
         message.To.Add(new MailboxAddress(
@@ -106,52 +106,6 @@ public class MailgunApiAdapter: IMailgunApiAdapter
         httpClient.DefaultRequestHeaders.Add("Authorization", $"Basic {encodedCredentials}");
         
         return httpClient;
-    }
-
-    private string GenerateInvitationEmailText(InviteUser receiver, string inviteLink)
-        => $"""
-           Hello {receiver.FirstNames},
-           
-           you have been invited to create an account for the Attendance List system.
-           
-           Please open the following link to complete your registration:
-           {receiver.Token}
-           
-           This invitation link expires in 3 hours.
-           
-           If you did not expect this invitation, you can ignore this email.
-           """;
-
-    private async Task<string> RenderInvitationEmailHtmlAsync(InviteUser receiver, string inviteLink, CancellationToken ct)
-    {
-        var mjmlRenderer = new MjmlRenderer();
-        var mjml = await File.ReadAllTextAsync("Templates/InvitaionEmail.mjml", ct);
-        
-        mjml = mjml
-            .Replace("{{firstName}}", receiver.FirstNames)
-            .Replace("{{inviteLink}}", inviteLink)
-            .Replace("{{expirationHours}}", "3");
-
-        var options = new MjmlOptions
-        {
-            Beautify = false
-        };
-
-        var (html, errors) = await mjmlRenderer.RenderAsync(mjml, options, ct);
-
-        if (errors.Count != 0)
-        {
-            _logger.LogWarning(errors.Count, "Error while rendering the email");
-        }
-        
-        return html;
-    }
-
-    private string GenerateInvitationLink(string token)
-    {
-        var frontendUrl = _configuration.GetValue<string>(ConfigNames.FrontendUrlKey) ??
-                          throw new ArgumentException("Url could not be found in configuration.", nameof(ConfigNames.FrontendUrlKey));
-        return $"{frontendUrl.TrimEnd('/')}/api/users/register-invited-user?token={token}";
     }
 
     public record MailSendResponse(string Id, string Message);

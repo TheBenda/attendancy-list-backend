@@ -16,6 +16,7 @@ public static class VaultApiExtensions
     internal static string ApiVaultClient = "VaultClient";
     public static IServiceCollection AddVaultApiAdapter(this IServiceCollection services, IConfiguration configuration)
     {
+        services.BuildServiceProvider();
         services.AddHttpClient(ApiVaultClient, (serviceProvider, client) =>
             {
                 var vaultOptions = serviceProvider

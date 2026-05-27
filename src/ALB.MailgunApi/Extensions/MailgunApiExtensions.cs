@@ -1,6 +1,7 @@
 using ALB.MailgunApi.Adapters;
 using ALB.MailgunApi.Clients;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http.Resilience;
 
@@ -11,7 +12,7 @@ namespace ALB.MailgunApi.Extensions;
 public static class MailgunApiExtensions
 {
     internal static string MailgunClient = "MailgunClient";
-    public static IServiceCollection AddMailgunApi(this IServiceCollection services)
+    public static IServiceCollection AddMailgunApi(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddHttpClient(MailgunClient, (serviceProvider, client) =>
             {
@@ -21,7 +22,7 @@ public static class MailgunApiExtensions
                 PooledConnectionIdleTimeout = TimeSpan.FromMinutes(5)
             })
             .SetHandlerLifetime(Timeout.InfiniteTimeSpan)
-            .AddResilienceHandler("SmartFace-pipeline", builder =>
+            .AddResilienceHandler("Mailgun-pipeline", builder =>
             {
                 builder.AddRetry(new HttpRetryStrategyOptions
                 {
@@ -31,7 +32,17 @@ public static class MailgunApiExtensions
                 });
             });
 
-        services.AddScoped<IMailgunApiAdapter, MailgunApiAdapter>();
+        services.AddTransient<EmailBodyGenerator>();
+
+        if (!string.IsNullOrEmpty(configuration["Mailpit:Host"]))
+        {
+            services.AddScoped<IMailgunApiAdapter, MailpitSmtpAdapter>();
+        }
+        else
+        {
+            services.AddScoped<IMailgunApiAdapter, MailgunApiAdapter>();
+        }
+        
         services.AddScoped<CachedMailgunCredentialsProvider>();
         
         return services;

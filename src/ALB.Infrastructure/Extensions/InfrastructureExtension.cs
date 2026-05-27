@@ -28,7 +28,7 @@ public static class InfrastructureExtension
         if (environmentName != "Test")
         {
             services.AddVaultApiAdapter(configuration);
-            services.AddMailgunApi();
+            services.AddMailgunApi(configuration);
         }
         
         services.AddHostedService<PowerUserSeederService>();
