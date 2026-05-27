@@ -41,6 +41,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Endpoints\Users\Validation\" />
       <Folder Include="Extensions\" />
     </ItemGroup>
 

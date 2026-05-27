@@ -8,12 +8,12 @@ namespace ALB.Api.Endpoints;
 
 internal static class EndpointsExtension
 {
-    internal static void MapEndpoints(this IEndpointRouteBuilder routeBuilder)
+    internal static void MapEndpoints(this IEndpointRouteBuilder routeBuilder, string environment)
     {
         routeBuilder.MapAuthEndpointsGroup();
         routeBuilder.MapAttendanceListEndpointsGroup();
         routeBuilder.MapChildrenEndpointsGroup();
-        routeBuilder.MapUserEndpointsGroup();
+        routeBuilder.MapUserEndpointsGroup(environment);
         routeBuilder.MapGroupsEndpointsGroup();
     }
 }

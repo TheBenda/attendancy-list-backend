@@ -37,7 +37,7 @@ var envName = builder.Environment.EnvironmentName;
 if (envName != "Test")
 {
     var viteAppUrl = builder.Configuration
-        .GetRequiredSection("VITE_APP_HTTP")
+        .GetRequiredSection(ConfigNames.FrontendUrlKey)
         .Value;
 
     builder.Services.AddCors(options =>
@@ -104,7 +104,7 @@ builder.Services
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (builder.Environment.EnvironmentName != "Test")
+if (envName != "Test")
     app.UseCors(viteAppCorsPolicy);
 app.UseExceptionHandler("/Error");
 app.UseForwardedHeaders();
@@ -118,7 +118,7 @@ app.MapScalarApiReference("/api-reference", options =>
         .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
 });
 
-app.MapEndpoints();
+app.MapEndpoints(envName);
 app.MapGet("/me", (ClaimsPrincipal claims) => Results.Ok(claims.Claims.ToDictionary(c => c.Type, c => c.Value)))
     .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
 

@@ -33,6 +33,7 @@ var api = builder.AddProject<Projects.ALB_Api>("Api")
     .WithEnvironment("Vault__Token", vaultToken);
 
 var viteApp = builder.AddViteApp("vite-app", "../../../attendance-list-frontend/")
+    .WithPnpm()
     .WithReference(api);
 
 api.WithReference(viteApp)

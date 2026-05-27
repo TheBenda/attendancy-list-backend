@@ -92,9 +92,10 @@ public static class ApplicationExtension
                 options.User.AllowedUserNameCharacters =
                     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
                 options.User.RequireUniqueEmail = true;
+                
                 options.SignIn.RequireConfirmedEmail = false;
-                options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.SignIn.RequireConfirmedAccount = false;
+                options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
             })
             .AddRoles<ApplicationRole>()

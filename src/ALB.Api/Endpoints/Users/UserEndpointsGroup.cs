@@ -4,10 +4,12 @@ namespace ALB.Api.Endpoints.Users;
 
 internal static class UserEndpointsGroup
 {
-    internal static void MapUserEndpointsGroup(this IEndpointRouteBuilder routeBuilder)
+    internal static void MapUserEndpointsGroup(this IEndpointRouteBuilder routeBuilder, string environment)
     {
-        routeBuilder.MapGroup("/api/users")
-            .WithTags("Users Management")
+        var userEndpointGroup = routeBuilder.MapGroup("/api/users")
+            .WithTags("Users Management");
+        
+        userEndpointGroup
             .MapCreateUserEndpoint()
             .MapDeleteUserEndpoint()
             .MapGetUsersEndpoint()
@@ -17,7 +19,14 @@ internal static class UserEndpointsGroup
             .MapGetChildrenOfGuardianEndpoint()
             .MapUpdateUserEndpoint()
             .MapRemoveUserRoleEndpoint()
-            .MapInviteUserEndpoint()
+            .MapGetInvitedUserEndpoint()
+            .MapRegisterInvitedUserEndpoint()
             .MapAddUserRoleEndpoint();
+        
+        
+        if (environment != "Test")
+        {
+            userEndpointGroup.MapInviteUserEndpoint();
+        }
     }
 }
