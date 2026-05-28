@@ -46,7 +46,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             e.HasKey(iu => iu.Id);
             
             e.Property(iu => iu.Email).IsRequired().HasMaxLength(50);
-            e.Property(iu => iu.Token).IsRequired().HasMaxLength(100);
+            e.Property(iu => iu.Token).IsRequired();
             e.Property(iu => iu.FirstNames).IsRequired().HasMaxLength(50);
             e.Property(iu => iu.LastNames).IsRequired().HasMaxLength(50);
             

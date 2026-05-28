@@ -2,6 +2,7 @@ using System.Security.Claims;
 
 using ALB.Api.Endpoints;
 using ALB.Api.Exceptions;
+using ALB.Api.Extensions;
 using ALB.Application;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
@@ -11,6 +12,7 @@ using ALB.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.FeatureManagement;
 using Microsoft.OpenApi;
 
 using Npgsql;
@@ -18,6 +20,8 @@ using Npgsql;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddFeatureManagement();
 
 builder.AddNpgsqlDataSource("postgresdb",
     configureDataSourceBuilder: sourceBuilder => sourceBuilder.UseNodaTime());
@@ -55,8 +59,9 @@ if (envName != "Test")
     });
 }
 
+var flagsOnStartup = builder.Configuration.GetFeaturesOnStartup();
 
-builder.Services.AddInfrastructure(builder.Configuration, envName);
+builder.Services.AddInfrastructure(builder.Configuration, flagsOnStartup);
 
 builder.Services.AddProblemDetails(options =>
 {
@@ -118,7 +123,9 @@ app.MapScalarApiReference("/api-reference", options =>
         .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
 });
 
-app.MapEndpoints(envName);
+var featureManager = app.Services.GetRequiredService<IFeatureManager>();
+await app.MapEndpointsAsync(featureManager);
+
 app.MapGet("/me", (ClaimsPrincipal claims) => Results.Ok(claims.Claims.ToDictionary(c => c.Type, c => c.Value)))
     .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
 

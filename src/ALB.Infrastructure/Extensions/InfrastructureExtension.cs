@@ -1,4 +1,5 @@
 using ALB.Domain.Identity;
+using ALB.Domain.Options;
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
 using ALB.Infrastructure.Persistence;
@@ -23,12 +24,13 @@ public static class InfrastructureExtension
         return services;
     }
 
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, string environmentName)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration,
+        FeatureFlagsOnStartup flagsOnStartup)
     {
-        if (environmentName != "Test")
+        if (flagsOnStartup.InviteUsers)
         {
-            services.AddVaultApiAdapter(configuration);
-            services.AddMailgunApi(configuration);
+            services.AddVaultApiAdapter();
+            services.AddMailgunApi(flagsOnStartup);    
         }
         
         services.AddHostedService<PowerUserSeederService>();

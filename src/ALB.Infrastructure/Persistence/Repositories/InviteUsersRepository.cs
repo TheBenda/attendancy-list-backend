@@ -42,5 +42,6 @@ public class InviteUsersRepository(ApplicationDbContext dbContext, IMailgunApiAd
     public async Task<InviteUser?> GetByIdAsync(Guid id, CancellationToken ct = default)
         => await dbContext
             .InviteUsers
+            .Where(iu => iu.Id == id)
             .SingleOrDefaultAsync(ct);
 }

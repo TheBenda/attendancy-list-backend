@@ -1,3 +1,4 @@
+using ALB.Domain.Options;
 using ALB.MailgunApi.Adapters;
 using ALB.MailgunApi.Clients;
 
@@ -12,7 +13,8 @@ namespace ALB.MailgunApi.Extensions;
 public static class MailgunApiExtensions
 {
     internal static string MailgunClient = "MailgunClient";
-    public static IServiceCollection AddMailgunApi(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddMailgunApi(this IServiceCollection services,
+        FeatureFlagsOnStartup flagsOnStartup)
     {
         services.AddHttpClient(MailgunClient, (serviceProvider, client) =>
             {
@@ -22,7 +24,7 @@ public static class MailgunApiExtensions
                 PooledConnectionIdleTimeout = TimeSpan.FromMinutes(5)
             })
             .SetHandlerLifetime(Timeout.InfiniteTimeSpan)
-            .AddResilienceHandler("Mailgun-pipeline", builder =>
+            .AddResilienceHandler("SmartFace-pipeline", builder =>
             {
                 builder.AddRetry(new HttpRetryStrategyOptions
                 {
@@ -31,10 +33,10 @@ public static class MailgunApiExtensions
                     Delay = TimeSpan.FromMilliseconds(100)
                 });
             });
-
+        
         services.AddTransient<EmailBodyGenerator>();
-
-        if (!string.IsNullOrEmpty(configuration["Mailpit:Host"]))
+        
+        if (flagsOnStartup.UseMailpit)
         {
             services.AddScoped<IMailgunApiAdapter, MailpitSmtpAdapter>();
         }

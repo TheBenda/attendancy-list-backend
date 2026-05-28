@@ -1,10 +1,13 @@
 using ALB.Api.Endpoints.Users.Roles;
+using ALB.Domain.Options;
+
+using Microsoft.FeatureManagement;
 
 namespace ALB.Api.Endpoints.Users;
 
 internal static class UserEndpointsGroup
 {
-    internal static void MapUserEndpointsGroup(this IEndpointRouteBuilder routeBuilder, string environment)
+    internal static async Task MapUserEndpointsGroupAsync(this IEndpointRouteBuilder routeBuilder, IFeatureManager featureManager)
     {
         var userEndpointGroup = routeBuilder.MapGroup("/api/users")
             .WithTags("Users Management");
@@ -19,14 +22,13 @@ internal static class UserEndpointsGroup
             .MapGetChildrenOfGuardianEndpoint()
             .MapUpdateUserEndpoint()
             .MapRemoveUserRoleEndpoint()
-            .MapGetInvitedUserEndpoint()
-            .MapRegisterInvitedUserEndpoint()
             .MapAddUserRoleEndpoint();
         
-        
-        if (environment != "Test")
+        if (await featureManager.IsEnabledAsync(FeatureFlags.InviteUsers))
         {
-            userEndpointGroup.MapInviteUserEndpoint();
+            userEndpointGroup.MapInviteUserEndpoint()
+                .MapGetInvitedUserEndpoint()
+                .MapRegisterInvitedUserEndpoint();
         }
     }
 }

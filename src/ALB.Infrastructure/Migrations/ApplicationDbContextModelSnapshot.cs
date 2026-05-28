@@ -263,8 +263,7 @@ namespace ALB.Infrastructure.Migrations
 
                     b.Property<string>("Token")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

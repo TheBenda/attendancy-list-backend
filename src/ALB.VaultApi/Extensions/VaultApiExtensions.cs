@@ -14,9 +14,8 @@ namespace ALB.VaultApi.Extensions;
 public static class VaultApiExtensions
 {
     internal static string ApiVaultClient = "VaultClient";
-    public static IServiceCollection AddVaultApiAdapter(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddVaultApiAdapter(this IServiceCollection services)
     {
-        services.BuildServiceProvider();
         services.AddHttpClient(ApiVaultClient, (serviceProvider, client) =>
             {
                 var vaultOptions = serviceProvider

@@ -3,17 +3,23 @@ using ALB.Api.Endpoints.Authentication;
 using ALB.Api.Endpoints.Children;
 using ALB.Api.Endpoints.Groups;
 using ALB.Api.Endpoints.Users;
+using Microsoft.FeatureManagement;
 
 namespace ALB.Api.Endpoints;
 
 internal static class EndpointsExtension
 {
-    internal static void MapEndpoints(this IEndpointRouteBuilder routeBuilder, string environment)
+    internal static async Task MapEndpointsAsync(this IEndpointRouteBuilder routeBuilder, IFeatureManager featureManager)
     {
+        var group = routeBuilder.MapGroup("/api/features")
+            .WithTags("Features");
+
+        group.MapGetEnabledFeaturesEndpoint();
+        
         routeBuilder.MapAuthEndpointsGroup();
         routeBuilder.MapAttendanceListEndpointsGroup();
         routeBuilder.MapChildrenEndpointsGroup();
-        routeBuilder.MapUserEndpointsGroup(environment);
+        await routeBuilder.MapUserEndpointsGroupAsync(featureManager);
         routeBuilder.MapGroupsEndpointsGroup();
     }
 }

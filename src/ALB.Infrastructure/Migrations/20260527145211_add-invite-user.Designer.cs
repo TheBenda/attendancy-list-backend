@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ALB.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260522151622_Add-Invite-User")]
-    partial class AddInviteUser
+    [Migration("20260527145211_add-invite-user")]
+    partial class addinviteuser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -266,8 +266,7 @@ namespace ALB.Infrastructure.Migrations
 
                     b.Property<string>("Token")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

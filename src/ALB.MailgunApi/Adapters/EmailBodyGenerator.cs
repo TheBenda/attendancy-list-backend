@@ -26,7 +26,7 @@ public class EmailBodyGenerator
             you have been invited to create an account for the Attendance List system.
 
             Please open the following link to complete your registration:
-            {receiver.Token}
+            {inviteLink}
 
             This invitation link expires in 3 hours.
 
@@ -36,7 +36,9 @@ public class EmailBodyGenerator
     public async Task<string> RenderInvitationEmailHtmlAsync(InviteUser receiver, string inviteLink, CancellationToken ct)
     {
         var mjmlRenderer = new MjmlRenderer();
-        var mjml = await File.ReadAllTextAsync("Templates/InvitaionEmail.mjml", ct);
+        var mjml = await ReadEmbeddedResourceAsync(
+            "ALB.MailgunApi.Templates.InvitaionEmail.mjml",
+            ct);
         
         mjml = mjml
             .Replace("{{firstName}}", receiver.FirstNames)
@@ -58,10 +60,21 @@ public class EmailBodyGenerator
         return html;
     }
 
-    public string GenerateInvitationLink(string token)
+    private static async Task<string> ReadEmbeddedResourceAsync(string resourceName, CancellationToken ct)
+    {
+        var assembly = typeof(EmailBodyGenerator).Assembly;
+
+        await using var stream = assembly.GetManifestResourceStream(resourceName)
+                                 ?? throw new FileNotFoundException($"Embedded resource '{resourceName}' not found.");
+
+        using var reader = new StreamReader(stream);
+        return await reader.ReadToEndAsync(ct);
+    }
+
+    public string GenerateInvitationLink(Guid id)
     {
         var frontendUrl = _configuration.GetValue<string>(ConfigNames.FrontendUrlKey) ??
                           throw new ArgumentException("Url could not be found in configuration.", nameof(ConfigNames.FrontendUrlKey));
-        return $"{frontendUrl.TrimEnd('/')}/api/users/register-invited-user?token={token}";
+        return $"{frontendUrl.TrimEnd('/')}/register-invited/{id}";
     }
 }

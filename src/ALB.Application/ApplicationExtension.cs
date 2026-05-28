@@ -46,7 +46,8 @@ public static class ApplicationExtension
             .AddPolicy(SystemRoles.AdminPolicy, x => x.RequireRole(SystemRoles.Admin))
             .AddPolicy(SystemRoles.CoAdminPolicy, x => x.RequireRole(SystemRoles.CoAdmin))
             .AddPolicy(SystemRoles.TeamPolicy, x => x.RequireRole(SystemRoles.Team))
-            .AddPolicy(SystemRoles.ParentPolicy, x => x.RequireRole(SystemRoles.Parent));
+            .AddPolicy(SystemRoles.ParentPolicy, x => x.RequireRole(SystemRoles.Parent))
+            .AddPolicy(SystemRoles.InvitedPolicy, x => x.RequireRole(SystemRoles.Invited));
 
         var option = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
 

@@ -31,7 +31,7 @@ public class MailpitSmtpAdapter : IMailgunApiAdapter
             throw new ArgumentException("Email is required.", nameof(receiver));
 
         var message = new MimeMessage();
-        var inviteLink = _emailBodyGenerator.GenerateInvitationLink(receiver.Token);
+        var inviteLink = _emailBodyGenerator.GenerateInvitationLink(receiver.Id);
         var html = await _emailBodyGenerator.RenderInvitationEmailHtmlAsync(receiver, inviteLink, ct);
         var text = _emailBodyGenerator.GenerateInvitationEmailText(receiver, inviteLink);
 

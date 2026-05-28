@@ -20,8 +20,8 @@ internal static class RegisterInvitedUserEndpoint
     {
         routeBuilder.MapPost("/register-invited-user", async (ClaimsPrincipal principal, RegisterInvitedUserRequest request, UserManager<ApplicationUser> userManager, IInviteUsersRepository inviteUsersRepository, IOptions<JwtOptions> options) =>
             {
-                var sub = principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-                var email = principal.FindFirst(JwtRegisteredClaimNames.Email)?.Value;
+                var sub = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var email = principal.FindFirst(ClaimTypes.Email)?.Value;
 
                 if (string.IsNullOrWhiteSpace(sub) || string.IsNullOrWhiteSpace(email))
                     return Results.BadRequest("Invalid email claim.");
@@ -60,29 +60,6 @@ internal static class RegisterInvitedUserEndpoint
             .RequireAuthorization(SystemRoles.InvitedPolicy);
         
         return routeBuilder;
-    }
-    
-    private static ClaimsPrincipal ValidateInviteToken(this string token, JwtOptions jwtOptions)
-    {
-        var tokenHandler = new JwtSecurityTokenHandler();
-
-        var validationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtOptions.Secret)),
-
-            ValidateIssuer = true,
-            ValidIssuer = jwtOptions.Issuer,
-
-            ValidateAudience = true,
-            ValidAudience = jwtOptions.Audience,
-
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
-        };
-
-        return tokenHandler.ValidateToken(token, validationParameters, out _);
     }
 }
 
