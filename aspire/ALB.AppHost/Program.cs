@@ -35,8 +35,12 @@ var api = builder.AddProject<Projects.ALB_Api>("Api")
     .WithEnvironment("Vault__Address", vaultAddress)
     .WithEnvironment("Vault__Token", vaultToken);
 
+#pragma warning disable ASPIRECERTIFICATES001
 var viteApp = builder.AddViteApp("vite-app", "../../../attendance-list-frontend/")
     .WithPnpm()
+    .WithHttpsEndpoint(env: "PORT")
+    .WithHttpsDeveloperCertificate()
+#pragma warning restore ASPIRECERTIFICATES001
     .WithReference(api);
 
 var useMailpit = builder.Configuration.GetValue<bool>($"FeatureManagement:UseMailpit");
