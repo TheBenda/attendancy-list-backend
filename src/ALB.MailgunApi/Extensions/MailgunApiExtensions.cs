@@ -1,6 +1,8 @@
+using ALB.Domain.Options;
 using ALB.MailgunApi.Adapters;
 using ALB.MailgunApi.Clients;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http.Resilience;
 
@@ -11,7 +13,8 @@ namespace ALB.MailgunApi.Extensions;
 public static class MailgunApiExtensions
 {
     internal static string MailgunClient = "MailgunClient";
-    public static IServiceCollection AddMailgunApi(this IServiceCollection services)
+    public static IServiceCollection AddMailgunApi(this IServiceCollection services,
+        FeatureFlagsOnStartup flagsOnStartup)
     {
         services.AddHttpClient(MailgunClient, (serviceProvider, client) =>
             {
@@ -30,8 +33,18 @@ public static class MailgunApiExtensions
                     Delay = TimeSpan.FromMilliseconds(100)
                 });
             });
-
-        services.AddScoped<IMailgunApiAdapter, MailgunApiAdapter>();
+        
+        services.AddTransient<EmailBodyGenerator>();
+        
+        if (flagsOnStartup.UseMailpit)
+        {
+            services.AddScoped<IMailgunApiAdapter, MailpitSmtpAdapter>();
+        }
+        else
+        {
+            services.AddScoped<IMailgunApiAdapter, MailgunApiAdapter>();
+        }
+        
         services.AddScoped<CachedMailgunCredentialsProvider>();
         
         return services;

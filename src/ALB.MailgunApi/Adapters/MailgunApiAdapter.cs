@@ -2,12 +2,19 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 
+using ALB.Domain.Entities;
 using ALB.Domain.Identity;
 using ALB.Domain.Options;
+using ALB.Domain.Values;
 using ALB.MailgunApi.Clients;
 using ALB.MailgunApi.Extensions;
 
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
 using MimeKit;
+
+using Mjml.Net;
 
 namespace ALB.MailgunApi.Adapters;
 
@@ -15,22 +22,26 @@ public class MailgunApiAdapter: IMailgunApiAdapter
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly CachedMailgunCredentialsProvider _credentialsProvider;
+    private readonly ILogger<MailgunApiAdapter> _logger;
+    private readonly EmailBodyGenerator _emailBodyGenerator;
 
-    public MailgunApiAdapter(IHttpClientFactory httpClientFactory, CachedMailgunCredentialsProvider credentialsProvider)
+    public MailgunApiAdapter(IHttpClientFactory httpClientFactory, CachedMailgunCredentialsProvider credentialsProvider, ILogger<MailgunApiAdapter> logger, EmailBodyGenerator emailBodyGenerator)
     {
         _httpClientFactory = httpClientFactory;
         _credentialsProvider = credentialsProvider;
+        _logger = logger;
+        _emailBodyGenerator = emailBodyGenerator;
     }
     
     /// <summary>
-    /// Sends an email to the specified user.
+    /// Sends an invitation email to the specified email address.
+    /// The link is designed to macht the frontend url.
     /// </summary>
     /// <param name="receiver"></param>
-    /// <param name="subject"></param>
-    /// <param name="body"></param>
+    /// <param name="ct"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    public async Task<string?> SendInvitationEmailAsync(ApplicationUser receiver, string subject, string body, CancellationToken ct = default)
+    public async Task<string?> SendInvitationEmailAsync(InviteUser receiver, CancellationToken ct = default)
     {
         var credentials = await _credentialsProvider.GetAsync(ct);
         var httpClient = GetHttpClientAsync(credentials);
@@ -40,16 +51,20 @@ public class MailgunApiAdapter: IMailgunApiAdapter
         
         var message = new MimeMessage();
 
+        var inviteLink = _emailBodyGenerator.GenerateInvitationLink(receiver.Id);
+        var html = await _emailBodyGenerator.RenderInvitationEmailHtmlAsync(receiver, inviteLink, ct);
+        var text = _emailBodyGenerator.GenerateInvitationEmailText(receiver, inviteLink);
+
         message.From.Add(new MailboxAddress("Attendance List", $"postmaster@{credentials.Domain}"));
         message.To.Add(new MailboxAddress(
-            $"{receiver.FirstName} {receiver.LastName}".Trim(),
+            $"{receiver.FirstNames} {receiver.LastNames}".Trim(),
             receiver.Email));
-        message.Subject = subject;
+        message.Subject = "You have been invited to join the Attendance List";
 
         var builder = new BodyBuilder
         {
-            TextBody = body,
-            HtmlBody = $"<p>{System.Net.WebUtility.HtmlEncode(body)}</p>"
+            TextBody = text,
+            HtmlBody = html
         };
 
         message.Body = builder.ToMessageBody();

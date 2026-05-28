@@ -24,6 +24,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
         <PackageReference Include="NodaTime.Serialization.SystemTextJson" />
         <PackageReference Include="Scalar.AspNetCore" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
@@ -41,7 +42,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Extensions\" />
+      <Folder Include="Endpoints\Users\Validation\" />
     </ItemGroup>
 
 </Project>

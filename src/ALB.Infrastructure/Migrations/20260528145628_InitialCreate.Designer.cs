@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ALB.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260421152639_InitialCreate")]
+    [Migration("20260528145628_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -241,6 +241,39 @@ namespace ALB.Infrastructure.Migrations
                     b.HasIndex("ResponsibleUserId");
 
                     b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("ALB.Domain.Entities.InviteUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("FirstNames")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("LastNames")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("InviteUsers");
                 });
 
             modelBuilder.Entity("ALB.Domain.Entities.UserGroup", b =>

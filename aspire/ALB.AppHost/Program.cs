@@ -1,6 +1,9 @@
 using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 var vaultToken = builder.AddParameter("vault-token", secret: true);
@@ -33,7 +36,23 @@ var api = builder.AddProject<Projects.ALB_Api>("Api")
     .WithEnvironment("Vault__Token", vaultToken);
 
 var viteApp = builder.AddViteApp("vite-app", "../../../attendance-list-frontend/")
+    .WithPnpm()
     .WithReference(api);
+
+var useMailpit = builder.Configuration.GetValue<bool>($"FeatureManagement:UseMailpit");
+
+if (useMailpit)
+{
+    var mailpit = builder.AddContainer("mailpit", "axllent/mailpit")
+        .WithVolume("mailpit-data", "/data")
+        .WithEndpoint(port: 1025, targetPort: 1025, name: "smtp")
+        .WithEndpoint(port: 8025, targetPort: 8025, name: "http")
+        .WithEnvironment("MP_DATABASE", "/data/mailpit.db")
+        .WithLifetime(ContainerLifetime.Persistent);
+
+    api.WithEnvironment("Mailpit__Host", mailpit.GetEndpoint("smtp").Property(EndpointProperty.Host))
+       .WithEnvironment("Mailpit__Port", mailpit.GetEndpoint("smtp").Property(EndpointProperty.Port));
+}
 
 api.WithReference(viteApp)
     .WaitFor(viteApp);

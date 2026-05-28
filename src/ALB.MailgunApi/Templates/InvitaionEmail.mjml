@@ -1,13 +1,61 @@
 <mjml>
-    <mj-body>
-        <mj-section background-color="#5f9ea0">
-            <mj-column width="40%">
-
+    <mj-body background-color="#f4f7fa">
+        <mj-section background-color="#5f9ea0" padding="20px 0">
+            <mj-column>
+                <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+                    You're invited
+                </mj-text>
+                <mj-text align="center" color="#eaf6f6" font-size="14px">
+                    Attendance List Registration
+                </mj-text>
             </mj-column>
-            <mj-column vertical-align="bottom" width="60%">
+        </mj-section>
 
+        <mj-section background-color="#ffffff" padding="30px 20px">
+            <mj-column>
+                <mj-text font-size="18px" color="#222222" font-weight="bold">
+                    Hello {{firstName}},
+                </mj-text>
+
+                <mj-text font-size="15px" color="#444444" line-height="22px">
+                    You have been invited to create an account for the Attendance List system.
+                </mj-text>
+
+                <mj-text font-size="15px" color="#444444" line-height="22px">
+                    Please click the button below to set your password and complete your registration.
+                </mj-text>
+
+                <mj-button
+                        background-color="#5f9ea0"
+                        color="#ffffff"
+                        font-size="16px"
+                        href="{{inviteLink}}"
+                        padding="20px 0">
+                    Complete registration
+                </mj-button>
+
+                <mj-text font-size="13px" color="#666666" line-height="20px">
+                    This invitation link expires in {{expirationHours}} hours.
+                </mj-text>
+
+                <mj-divider border-color="#dddddd" />
+
+                <mj-text font-size="13px" color="#666666" line-height="20px">
+                    If the button does not work, copy and paste this link into your browser:
+                </mj-text>
+
+                <mj-text font-size="13px" color="#1a73e8" line-height="20px">
+                    {{inviteLink}}
+                </mj-text>
             </mj-column>
+        </mj-section>
 
+        <mj-section background-color="#f4f7fa" padding="10px 20px 30px 20px">
+            <mj-column>
+                <mj-text align="center" font-size="12px" color="#999999">
+                    If you did not expect this invitation, you can ignore this email.
+                </mj-text>
+            </mj-column>
         </mj-section>
     </mj-body>
 </mjml>

@@ -29,6 +29,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<Grade> Grades { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<InviteUser> InviteUsers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,6 +40,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         modelBuilder.ApplyConfiguration(new CronTickerConfigurations());
         modelBuilder.ApplyConfiguration(new CronTickerOccurrenceConfigurations());
         */
+
+        modelBuilder.Entity<InviteUser>(e =>
+        {
+            e.HasKey(iu => iu.Id);
+            
+            e.Property(iu => iu.Email).IsRequired().HasMaxLength(50);
+            e.Property(iu => iu.Token).IsRequired();
+            e.Property(iu => iu.FirstNames).IsRequired().HasMaxLength(50);
+            e.Property(iu => iu.LastNames).IsRequired().HasMaxLength(50);
+            
+            e.HasIndex(iu => iu.Email).IsUnique();
+        });
 
         modelBuilder.Entity<AbsenceDay>(e =>
         {

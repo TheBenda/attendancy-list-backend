@@ -38,11 +38,16 @@ public static class ApplicationExtension
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services
+            .AddOptions<MailpitOptions>()
+            .Bind(configuration.GetSection(MailpitOptions.SectionName));
+
         services.AddAuthorizationBuilder()
             .AddPolicy(SystemRoles.AdminPolicy, x => x.RequireRole(SystemRoles.Admin))
             .AddPolicy(SystemRoles.CoAdminPolicy, x => x.RequireRole(SystemRoles.CoAdmin))
             .AddPolicy(SystemRoles.TeamPolicy, x => x.RequireRole(SystemRoles.Team))
-            .AddPolicy(SystemRoles.ParentPolicy, x => x.RequireRole(SystemRoles.Parent));
+            .AddPolicy(SystemRoles.ParentPolicy, x => x.RequireRole(SystemRoles.Parent))
+            .AddPolicy(SystemRoles.InvitedPolicy, x => x.RequireRole(SystemRoles.Invited));
 
         var option = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
 
@@ -92,9 +97,10 @@ public static class ApplicationExtension
                 options.User.AllowedUserNameCharacters =
                     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
                 options.User.RequireUniqueEmail = true;
+                
                 options.SignIn.RequireConfirmedEmail = false;
-                options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.SignIn.RequireConfirmedAccount = false;
+                options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
             })
             .AddRoles<ApplicationRole>()

@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using NodaTime;
-
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -121,6 +120,21 @@ namespace ALB.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Grades", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InviteUsers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Email = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Token = table.Column<string>(type: "text", nullable: false),
+                    FirstNames = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    LastNames = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InviteUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -588,6 +602,12 @@ namespace ALB.Infrastructure.Migrations
                 column: "ResponsibleUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InviteUsers_Email",
+                table: "InviteUsers",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_UserId",
                 table: "RefreshTokens",
                 column: "UserId");
@@ -636,6 +656,9 @@ namespace ALB.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Grades");
+
+            migrationBuilder.DropTable(
+                name: "InviteUsers");
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
