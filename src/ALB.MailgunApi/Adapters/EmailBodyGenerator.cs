@@ -73,8 +73,8 @@ public class EmailBodyGenerator
 
     public string GenerateInvitationLink(Guid id)
     {
-        var frontendUrl = _configuration.GetValue<string>(ConfigNames.FrontendUrlKey) ??
-                          throw new ArgumentException("Url could not be found in configuration.", nameof(ConfigNames.FrontendUrlKey));
+        var frontendUrl = _configuration.GetValue<string>(ConfigNames.FrontendUrlKeyHttps) ??
+                          throw new ArgumentException("Url could not be found in configuration.", nameof(ConfigNames.FrontendUrlKeyHttps));
         return $"{frontendUrl.TrimEnd('/')}/register-invited/{id}";
     }
 }

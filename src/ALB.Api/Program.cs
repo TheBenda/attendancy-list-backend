@@ -41,7 +41,7 @@ var envName = builder.Environment.EnvironmentName;
 if (envName != "Test")
 {
     var viteAppUrl = builder.Configuration
-        .GetRequiredSection(ConfigNames.FrontendUrlKey)
+        .GetRequiredSection(ConfigNames.FrontendUrlKeyHttps)
         .Value;
 
     builder.Services.AddCors(options =>
@@ -111,6 +111,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (envName != "Test")
     app.UseCors(viteAppCorsPolicy);
+app.UseHttpsRedirection();
 app.UseExceptionHandler("/Error");
 app.UseForwardedHeaders();
 app.UseAuthentication();
@@ -146,10 +147,5 @@ app.MapIdentityApiFilterable<ApplicationUser>(new IdentityApiEndpointRouteBuilde
 });
 
 //app.UseTickerQ();
-
-// TODO: add migrations when out of dev cycle
-//using var serviceScope = app.Services.CreateScope();
-//var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//await context.Database.EnsureCreatedAsync();
 
 app.Run();

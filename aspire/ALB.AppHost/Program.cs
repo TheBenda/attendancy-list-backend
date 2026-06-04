@@ -23,11 +23,11 @@ var postgres = builder.AddPostgres("postgres")
 
 var postgresdb = postgres.AddDatabase("postgresdb");
 
-var migrationService = builder.AddProject<Projects.ALB_MigrationService>("MigrationService")
+var migrationService = builder.AddProject<Projects.ALB_MigrationService>("migration-service")
     .WithReference(postgresdb)
     .WaitFor(postgresdb);
 
-var api = builder.AddProject<Projects.ALB_Api>("Api")
+var api = builder.AddProject<Projects.ALB_Api>("api")
     .WithReference(postgresdb)
     .WaitFor(postgresdb)
     .WaitFor(vault)
@@ -35,8 +35,12 @@ var api = builder.AddProject<Projects.ALB_Api>("Api")
     .WithEnvironment("Vault__Address", vaultAddress)
     .WithEnvironment("Vault__Token", vaultToken);
 
+#pragma warning disable ASPIRECERTIFICATES001
 var viteApp = builder.AddViteApp("vite-app", "../../../attendance-list-frontend/")
     .WithPnpm()
+    .WithHttpsEndpoint(env: "PORT")
+    .WithHttpsDeveloperCertificate()
+#pragma warning restore ASPIRECERTIFICATES001
     .WithReference(api);
 
 var useMailpit = builder.Configuration.GetValue<bool>($"FeatureManagement:UseMailpit");
@@ -54,22 +58,33 @@ if (useMailpit)
        .WithEnvironment("Mailpit__Port", mailpit.GetEndpoint("smtp").Property(EndpointProperty.Port));
 }
 
+
+
+//var gateway = builder.AddProject<Projects.ALB_Gateway>("gateway")
+//    .WithReference(api)
+//    .WaitFor(api)
+//    .WithReference(viteApp)
+//    .WaitFor(viteApp);
+    //.WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", "../../alb-frontend.pem")
+    //.WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__KeyPath", "../../alb-frontend-key.pem");
+//#pragma warning disable ASPIRECERTIFICATES001
+//var gateway = builder.AddYarp("gateway")
+//    .WithHttpsEndpoint()
+//    .WithHttpsDeveloperCertificate()
+//#pragma warning restore ASPIRECERTIFICATES001
+//    .WithConfiguration(yarp =>
+//    {
+//        yarp.AddRoute("/api/{**catch-all}", api);
+//        
+//        yarp.AddRoute("/{**catch-all}", viteApp);
+//    });
+
 api.WithReference(viteApp)
+    //.WithReference(gateway)
     .WaitFor(viteApp);
 
-/*
+//viteApp.WithReference(gateway);
 
-_ = builder.AddYarp("gateway") 
-    .WithConfiguration(yarp =>
-    {
-        var cluster = new YarpCluster();
-        yarp.AddCluster("api-cluster", destination: "http://alb-api");
-        yarp.AddCluster("frontend-cluster", destination: "http://alb-frontend");
-        
-        yarp.AddRoute("/api/{**catch-all}", api);
-        
-        yarp.AddRoute("/{**catch-all}", viteApp);
-    });
-    */
+
 
 builder.Build().Run();
