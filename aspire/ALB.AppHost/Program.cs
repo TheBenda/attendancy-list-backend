@@ -7,6 +7,20 @@ using Microsoft.Extensions.Hosting;
 var builder = DistributedApplication.CreateBuilder(args);
 
 var vaultToken = builder.AddParameter("vault-token", secret: true);
+var registryEndpoint = builder.AddParameter("registryEndpoint");
+var gatewayClassName = builder.AddParameter("gatewayClassName");
+var loadBalancerName = builder.AddParameter("loadBalancerName");
+var loadBalancerNamespace = builder.AddParameter("loadBalancerNamespace");
+var clusterIssuer = builder.AddParameter("clusterIssuer");
+var externalFqdn = builder.AddParameter("externalFqdn");
+
+// Kubernetes environment
+var k8s = builder.AddKubernetesEnvironment("k8s");
+
+// Container registry
+#pragma warning disable ASPIRECOMPUTE003
+var acr = builder.AddContainerRegistry("acr", registryEndpoint);
+#pragma warning restore ASPIRECOMPUTE003
 
 var vaultAddress = "http://127.0.0.1:8200";
 var vault = builder.AddContainer("vault", "hashicorp/vault")
@@ -19,6 +33,16 @@ var vault = builder.AddContainer("vault", "hashicorp/vault")
 
 var postgres = builder.AddPostgres("postgres")
     .WithPgWeb()
+    .WithLifetime(ContainerLifetime.Persistent);
+
+var postgresZitadel = builder.AddPostgres("postgres-zitadel")
+    .WithPgWeb()
+    .WithLifetime(ContainerLifetime.Persistent);
+
+var postgresZitadelDb = postgresZitadel.AddDatabase("postgres-zitadel-db");
+
+var zitadel = builder.AddZitadel("zitadel")
+    .WithDatabase(postgresZitadelDb)
     .WithLifetime(ContainerLifetime.Persistent);
 
 var postgresdb = postgres.AddDatabase("postgresdb");
@@ -58,32 +82,9 @@ if (useMailpit)
        .WithEnvironment("Mailpit__Port", mailpit.GetEndpoint("smtp").Property(EndpointProperty.Port));
 }
 
-
-
-//var gateway = builder.AddProject<Projects.ALB_Gateway>("gateway")
-//    .WithReference(api)
-//    .WaitFor(api)
-//    .WithReference(viteApp)
-//    .WaitFor(viteApp);
-    //.WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", "../../alb-frontend.pem")
-    //.WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__KeyPath", "../../alb-frontend-key.pem");
-//#pragma warning disable ASPIRECERTIFICATES001
-//var gateway = builder.AddYarp("gateway")
-//    .WithHttpsEndpoint()
-//    .WithHttpsDeveloperCertificate()
-//#pragma warning restore ASPIRECERTIFICATES001
-//    .WithConfiguration(yarp =>
-//    {
-//        yarp.AddRoute("/api/{**catch-all}", api);
-//        
-//        yarp.AddRoute("/{**catch-all}", viteApp);
-//    });
-
 api.WithReference(viteApp)
-    //.WithReference(gateway)
     .WaitFor(viteApp);
 
-//viteApp.WithReference(gateway);
 
 
 

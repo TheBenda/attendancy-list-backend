@@ -1,6 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-    <Sdk Name="Aspire.AppHost.Sdk" Version="13.2.0" />
+<Project Sdk="Aspire.AppHost.Sdk/13.4.2">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -12,8 +10,10 @@
 
     <ItemGroup>
         <PackageReference Include="Aspire.Hosting.JavaScript" />
+        <PackageReference Include="Aspire.Hosting.Kubernetes" />
         <PackageReference Include="Aspire.Hosting.PostgreSQL" />
         <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
+        <PackageReference Include="CommunityToolkit.Aspire.Hosting.Zitadel" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
