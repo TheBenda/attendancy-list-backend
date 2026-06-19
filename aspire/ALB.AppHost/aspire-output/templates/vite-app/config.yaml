@@ -1,0 +1,16 @@
+---
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  name: "vite-app-config"
+  labels:
+    app.kubernetes.io/name: "{{ .Chart.Name }}"
+    app.kubernetes.io/component: "vite-app"
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+data:
+  NODE_ENV: "{{ .Values.config.vite_app.NODE_ENV }}"
+  PORT: "{{ .Values.config.vite_app.PORT }}"
+  API_HTTP: "http://api-service:{{ .Values.parameters.api.port_http }}"
+  services__api__http__0: "http://api-service:{{ .Values.parameters.api.port_http }}"
+  API_HTTPS: "https://api-service:{{ .Values.parameters.api.port_http }}"
+  YARP_ENABLE_STATIC_FILES: "{{ .Values.config.vite_app.YARP_ENABLE_STATIC_FILES }}"

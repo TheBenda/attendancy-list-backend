@@ -1,0 +1,32 @@
+secrets:
+  postgres:
+    postgres_password: 2Ad0qWp-p_M_dMvG+7B10a
+  postgres_zitadel:
+    postgres_zitadel_password: HEvP}8GD!GJtF}r.rBCe{M
+  zitadel:
+    zitadel_masterKey: t3arFNEM)05ZkgEZR4jNdHgQr1sfm5Fm
+    zitadel_password: fMW_vfAvvQcehQj_WnB6w_
+    postgres_zitadel_password: HEvP}8GD!GJtF}r.rBCe{M
+    ConnectionStrings__postgres_zitadel_db: Host=postgres-zitadel-service;Port=5432;Username=postgres;Password=HEvP}8GD!GJtF}r.rBCe{M;Database=postgres-zitadel-db
+    POSTGRES_ZITADEL_DB_URI: postgresql://postgres:HEvP}8GD!GJtF}r.rBCe{M@postgres-zitadel-service:5432/postgres-zitadel-db
+  api:
+    postgres_password: 2Ad0qWp-p_M_dMvG+7B10a
+    vault_token: asdf
+    ConnectionStrings__postgresdb: Host=postgres-service;Port=5432;Username=postgres;Password=2Ad0qWp-p_M_dMvG+7B10a;Database=postgresdb
+    POSTGRESDB_URI: postgresql://postgres:2Ad0qWp-p_M_dMvG+7B10a@postgres-service:5432/postgresdb
+config:
+  zitadel:
+    zitadel_username: admin
+  api:
+    HTTP_PORTS: '{{ .Values.parameters.api.port_http | int }}'
+  vite_app:
+    API_HTTP: http://api-service:{{ .Values.parameters.api.port_http }}
+    services__api__http__0: http://api-service:{{ .Values.parameters.api.port_http }}
+    API_HTTPS: https://api-service:{{ .Values.parameters.api.port_http }}
+parameters:
+  api:
+    api_image: localhost:5000/api:aspire-deploy-20260618165818
+  vite_app:
+    vite_app_image: localhost:5000/vite-app:aspire-deploy-20260618165818
+  vault:
+    vault_image: localhost:5000/vault:aspire-deploy-20260618165818

@@ -8,10 +8,12 @@ using ALB.Domain.Identity;
 using ALB.Domain.Values;
 using ALB.Infrastructure.Authentication;
 using ALB.Infrastructure.Extensions;
+using ALB.Infrastructure.Persistence;
 
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.FeatureManagement;
 using Microsoft.OpenApi;
 
@@ -145,6 +147,11 @@ app.MapIdentityApiFilterable<ApplicationUser>(new IdentityApiEndpointRouteBuilde
     ExcludeInfoGet = true,
     ExcludeInfoPost = true
 });
+
+using var serviceScope = app.Services.CreateScope();
+
+var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+await context.Database.MigrateAsync();
 
 //app.UseTickerQ();
 
