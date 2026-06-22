@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <UserSecretsId>7173106a-2fab-436f-96b6-cb9c9f09c03e</UserSecretsId>
+        <ContainerRuntimeIdentifier>linux-arm64</ContainerRuntimeIdentifier>
     </PropertyGroup>
 
     <ItemGroup>

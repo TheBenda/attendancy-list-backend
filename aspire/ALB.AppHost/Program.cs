@@ -1,5 +1,6 @@
 using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
+using Aspire.Hosting.Publishing;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -58,7 +59,7 @@ var api = builder.AddProject<Projects.ALB_Api>("api")
     .WaitFor(postgresdb)
     //.WaitForCompletion(migrationService)
     .WithExternalHttpEndpoints()
-    .WithEnvironment("Vault__Address", vaultAddress)
+    //.WithEnvironment("Vault__Address", vaultAddress)
     .WithEnvironment("Vault__Token", vaultToken);
 
 localtestGateway.WithRoute("api-route", "/", api.GetEndpoint("http"));
@@ -111,8 +112,6 @@ localtestGateway.WithRoute("vault-route", "/", vault.GetEndpoint("http"));
 
 api.WithReference(viteApp)
     .WaitFor(viteApp);
-
-
 
 
 builder.Build().Run();

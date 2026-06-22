@@ -16,7 +16,6 @@ data:
   POSTGRESDB_USERNAME: "{{ .Values.config.api.POSTGRESDB_USERNAME }}"
   POSTGRESDB_JDBCCONNECTIONSTRING: "{{ .Values.config.api.POSTGRESDB_JDBCCONNECTIONSTRING }}"
   POSTGRESDB_DATABASENAME: "{{ .Values.config.api.POSTGRESDB_DATABASENAME }}"
-  Vault__Address: "{{ .Values.config.api.Vault__Address }}"
   VITE_APP_HTTP: "{{ .Values.config.api.VITE_APP_HTTP }}"
   services__vite-app__http__0: "{{ .Values.config.api.services__vite_app__http__0 }}"
   OTEL_EXPORTER_OTLP_ENDPOINT: "{{ .Values.config.api.OTEL_EXPORTER_OTLP_ENDPOINT }}"

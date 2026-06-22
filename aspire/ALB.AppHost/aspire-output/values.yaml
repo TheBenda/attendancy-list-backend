@@ -55,7 +55,6 @@ config:
     POSTGRESDB_USERNAME: "postgres"
     POSTGRESDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres-service:5432/postgresdb"
     POSTGRESDB_DATABASENAME: "postgresdb"
-    Vault__Address: "http://127.0.0.1:8200"
     VITE_APP_HTTP: "http://vite-app-service:5000"
     services__vite_app__http__0: "http://vite-app-service:5000"
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://k8s-dashboard-service:18889"

@@ -25,8 +25,8 @@ config:
     API_HTTPS: https://api-service:{{ .Values.parameters.api.port_http }}
 parameters:
   api:
-    api_image: localhost:5000/api:aspire-deploy-20260618165818
+    api_image: localhost:5000/api:aspire-deploy-20260622160222
   vite_app:
-    vite_app_image: localhost:5000/vite-app:aspire-deploy-20260618165818
+    vite_app_image: localhost:5000/vite-app:aspire-deploy-20260622160222
   vault:
-    vault_image: localhost:5000/vault:aspire-deploy-20260618165818
+    vault_image: localhost:5000/vault:aspire-deploy-20260622160222
