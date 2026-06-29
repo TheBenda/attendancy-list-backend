@@ -1,6 +1,5 @@
 parameters:
   api:
-    port_http: 8080
     api_image: "api:latest"
   vite_app:
     vite_app_image: "vite-app:latest"
@@ -46,10 +45,11 @@ config:
     POSTGRES_ZITADEL_DB_USERNAME: "postgres"
     POSTGRES_ZITADEL_DB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres-zitadel-service:5432/postgres-zitadel-db"
     POSTGRES_ZITADEL_DB_DATABASENAME: "postgres-zitadel-db"
+    ZITADEL_TLSMODE: "external"
   api:
     OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
     ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
-    HTTP_PORTS: ""
+    HTTP_PORTS: "8080"
     POSTGRESDB_HOST: "postgres-service"
     POSTGRESDB_PORT: "5432"
     POSTGRESDB_USERNAME: "postgres"
@@ -63,9 +63,9 @@ config:
   vite_app:
     NODE_ENV: "production"
     PORT: "5000"
-    API_HTTP: ""
-    services__api__http__0: ""
-    API_HTTPS: ""
+    API_HTTP: "http://api-service:8080"
+    services__api__http__0: "http://api-service:8080"
+    API_HTTPS: "https://api-service:8080"
     YARP_ENABLE_STATIC_FILES: "true"
   vault:
     VAULT_ADDR: "http://127.0.0.1:8200"

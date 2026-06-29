@@ -65,6 +65,22 @@ spec:
           port: 443
 ---
 apiVersion: gateway.networking.k8s.io/v1
+kind: GRPCRoute
+metadata:
+  name: zitadel-grpc-route
+  namespace: default
+spec:
+  parentRefs:
+    - name: localtest-gateway
+      sectionName: https
+  hostnames:
+    - auth.localtest.me
+  rules:
+    - backendRefs:
+        - name: zitadel
+          port: 8080
+---
+apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: api-route

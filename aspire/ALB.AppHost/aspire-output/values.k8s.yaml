@@ -17,16 +17,10 @@ secrets:
 config:
   zitadel:
     zitadel_username: admin
-  api:
-    HTTP_PORTS: '{{ .Values.parameters.api.port_http | int }}'
-  vite_app:
-    API_HTTP: http://api-service:{{ .Values.parameters.api.port_http }}
-    services__api__http__0: http://api-service:{{ .Values.parameters.api.port_http }}
-    API_HTTPS: https://api-service:{{ .Values.parameters.api.port_http }}
 parameters:
   api:
-    api_image: localhost:5000/api:aspire-deploy-20260622160222
+    api_image: localhost:5000/api:aspire-deploy-20260629071639
   vite_app:
-    vite_app_image: localhost:5000/vite-app:aspire-deploy-20260622160222
+    vite_app_image: localhost:5000/vite-app:aspire-deploy-20260629071639
   vault:
-    vault_image: localhost:5000/vault:aspire-deploy-20260622160222
+    vault_image: localhost:5000/vault:aspire-deploy-20260629071639

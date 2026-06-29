@@ -5,6 +5,8 @@ using Aspire.Hosting.Publishing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
+using Microsoft.Extensions.DependencyInjection;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 var vaultToken = builder.AddParameter("vault-token", secret: true);
@@ -44,9 +46,10 @@ var postgresZitadelDb = postgresZitadel.AddDatabase("postgres-zitadel-db");
 var zitadel = builder.AddZitadel("zitadel")
     .WithDatabase(postgresZitadelDb)
     .WithLifetime(ContainerLifetime.Persistent)
-    .WithExternalHttpEndpoints();
+    .WithExternalHttpEndpoints()
+    .WithEnvironment("ZITADEL_TLSMODE", "external");
 
-localtestGateway.WithRoute("auth-route", "/", zitadel.GetEndpoint("http"));
+localtestGateway.WithRoute("auth.localtest.me", "/", zitadel.GetEndpoint("http"));
 
 var postgresdb = postgres.AddDatabase("postgresdb");
 
@@ -54,26 +57,43 @@ var postgresdb = postgres.AddDatabase("postgresdb");
 //    .WithReference(postgresdb)
 //    .WaitFor(postgresdb);
 
+#pragma warning disable ASPIREPIPELINES003
 var api = builder.AddProject<Projects.ALB_Api>("api")
     .WithReference(postgresdb)
     .WaitFor(postgresdb)
     //.WaitForCompletion(migrationService)
     .WithExternalHttpEndpoints()
     //.WithEnvironment("Vault__Address", vaultAddress)
-    .WithEnvironment("Vault__Token", vaultToken);
+    .WithEnvironment("Vault__Token", vaultToken)
+    .PublishAsDockerFile(cb =>
+    {
+        // Context must be repo root so the Dockerfile can COPY sibling projects
+        cb.WithDockerfile(contextPath: "../..", dockerfilePath: "src/ALB.Api/Dockerfile");
+    })
+    .WithContainerBuildOptions(ctx =>
+    {
+        ctx.TargetPlatform = ContainerTargetPlatform.LinuxArm64;
+    });
+#pragma warning restore ASPIREPIPELINES003
 
-localtestGateway.WithRoute("api-route", "/", api.GetEndpoint("http"));
+localtestGateway.WithRoute("api.localtest.me", "/", api.GetEndpoint("http"));
 
 #pragma warning disable ASPIREJAVASCRIPT001
+#pragma warning disable ASPIREPIPELINES003
 var viteApp = builder.AddViteApp("vite-app", "../../../attendance-list-frontend/", "ci")
     .WithPnpm()
     .WithHttpEndpoint(env: "PORT")
     .WithReference(api)
     .WithExternalHttpEndpoints()
-    .PublishAsStaticWebsite();
+    .PublishAsStaticWebsite()
+    .WithContainerBuildOptions(ctx =>
+    {
+        ctx.TargetPlatform = ContainerTargetPlatform.LinuxArm64;
+    });
+#pragma warning restore ASPIREPIPELINES003
 #pragma warning restore ASPIREJAVASCRIPT001
 
-localtestGateway.WithRoute("ui-route", "/", viteApp.GetEndpoint("http"));
+localtestGateway.WithRoute("ui.localtest.me", "/", viteApp.GetEndpoint("http"));
 
 var useMailpit = builder.Configuration.GetValue<bool>($"FeatureManagement:UseMailpit");
 
@@ -93,9 +113,10 @@ if (useMailpit)
     api.WithEnvironment("Mailpit__Host", mailpit.GetEndpoint("smtp").Property(EndpointProperty.Host))
        .WithEnvironment("Mailpit__Port", mailpit.GetEndpoint("smtp").Property(EndpointProperty.Port));
     
-    localtestGateway.WithRoute("mailpit-route", "/", mailpit.GetEndpoint("http"));
+    localtestGateway.WithRoute("mailpit.localtest.me", "/", mailpit.GetEndpoint("http"));
 }
 #pragma warning disable ASPIRECOMPUTE003
+#pragma warning disable ASPIREPIPELINES003
 var vault = builder.AddContainer("vault", "hashicorp/vault")
     .WithDockerfile("vault")
     .WithImageRegistry(acrDefaultUrl)
@@ -104,14 +125,20 @@ var vault = builder.AddContainer("vault", "hashicorp/vault")
     .WithContainerRuntimeArgs("--cap-add=IPC_LOCK")
     .WithEnvironment("VAULT_ADDR", vaultAddress)
     .WithContainerRegistry(acr)
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithContainerBuildOptions(ctx =>
+    {
+        ctx.TargetPlatform = ContainerTargetPlatform.LinuxArm64;
+    });
+#pragma warning restore ASPIREPIPELINES003
 #pragma warning restore ASPIRECOMPUTE003
-    .WithLifetime(ContainerLifetime.Persistent);
 
-localtestGateway.WithRoute("vault-route", "/", vault.GetEndpoint("http"));
+localtestGateway.WithRoute("vault.localtest.me", "/", vault.GetEndpoint("http"));
 
 
 api.WithReference(viteApp)
     .WaitFor(viteApp);
 
-
 builder.Build().Run();
+
+

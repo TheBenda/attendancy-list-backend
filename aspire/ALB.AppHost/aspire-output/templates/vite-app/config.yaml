@@ -10,7 +10,7 @@ metadata:
 data:
   NODE_ENV: "{{ .Values.config.vite_app.NODE_ENV }}"
   PORT: "{{ .Values.config.vite_app.PORT }}"
-  API_HTTP: "http://api-service:{{ .Values.parameters.api.port_http }}"
-  services__api__http__0: "http://api-service:{{ .Values.parameters.api.port_http }}"
-  API_HTTPS: "https://api-service:{{ .Values.parameters.api.port_http }}"
+  API_HTTP: "{{ .Values.config.vite_app.API_HTTP }}"
+  services__api__http__0: "{{ .Values.config.vite_app.services__api__http__0 }}"
+  API_HTTPS: "{{ .Values.config.vite_app.API_HTTPS }}"
   YARP_ENABLE_STATIC_FILES: "{{ .Values.config.vite_app.YARP_ENABLE_STATIC_FILES }}"
