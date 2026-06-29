@@ -5,8 +5,8 @@ secrets:
     postgres_zitadel_password: HEvP}8GD!GJtF}r.rBCe{M
   zitadel:
     zitadel_masterKey: t3arFNEM)05ZkgEZR4jNdHgQr1sfm5Fm
-    zitadel_password: fMW_vfAvvQcehQj_WnB6w_
     postgres_zitadel_password: HEvP}8GD!GJtF}r.rBCe{M
+    zitadel_password: fMW_vfAvvQcehQj_WnB6w_
     ConnectionStrings__postgres_zitadel_db: Host=postgres-zitadel-service;Port=5432;Username=postgres;Password=HEvP}8GD!GJtF}r.rBCe{M;Database=postgres-zitadel-db
     POSTGRES_ZITADEL_DB_URI: postgresql://postgres:HEvP}8GD!GJtF}r.rBCe{M@postgres-zitadel-service:5432/postgres-zitadel-db
   api:
@@ -14,13 +14,10 @@ secrets:
     vault_token: asdf
     ConnectionStrings__postgresdb: Host=postgres-service;Port=5432;Username=postgres;Password=2Ad0qWp-p_M_dMvG+7B10a;Database=postgresdb
     POSTGRESDB_URI: postgresql://postgres:2Ad0qWp-p_M_dMvG+7B10a@postgres-service:5432/postgresdb
-config:
-  zitadel:
-    zitadel_username: admin
 parameters:
   api:
-    api_image: localhost:5000/api:aspire-deploy-20260629071639
+    api_image: localhost:5000/api:aspire-deploy-20260629153914
   vite_app:
-    vite_app_image: localhost:5000/vite-app:aspire-deploy-20260629071639
+    vite_app_image: localhost:5000/vite-app:aspire-deploy-20260629153914
   vault:
-    vault_image: localhost:5000/vault:aspire-deploy-20260629071639
+    vault_image: localhost:5000/vault:aspire-deploy-20260629153914

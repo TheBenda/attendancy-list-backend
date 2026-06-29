@@ -43,12 +43,61 @@ var postgresZitadel = builder.AddPostgres("postgres-zitadel")
 
 var postgresZitadelDb = postgresZitadel.AddDatabase("postgres-zitadel-db");
 
-var zitadel = builder.AddZitadel("zitadel")
-    .WithDatabase(postgresZitadelDb)
+var zitadelMasterKey = builder.AddParameter("zitadel-masterKey", secret: true);
+var zitadelAdminPassword = builder.AddParameter("zitadel-password", secret: true);
+var zitadelLoginPat = builder.AddParameter("zitadel-login-pat", secret: true);
+
+var zitadel = builder.AddContainer("zitadel", "ghcr.io/zitadel/zitadel", "v4.15.0")
+    .WithArgs("start-from-init", "--masterkeyFromEnv", "--tlsMode", "external")
+    .WithHttpEndpoint(targetPort: 8080, name: "http")
     .WithLifetime(ContainerLifetime.Persistent)
     .WithExternalHttpEndpoints()
-    .WithEnvironment("ZITADEL_TLSMODE", "external");
+    // TLS is terminated by Traefik gateway, Zitadel runs plain HTTP
+    .WithEnvironment("ZITADEL_TLS_ENABLED", "false")
+    .WithEnvironment("ZITADEL_EXTERNALSECURE", "true")
+    .WithEnvironment("ZITADEL_EXTERNALDOMAIN", "auth.localtest.me")
+    .WithEnvironment("ZITADEL_EXTERNALPORT", "443")
+    .WithEnvironment("ZITADEL_MASTERKEY", zitadelMasterKey)
+    // Database
+    .WithEnvironment("ZITADEL_DATABASE_POSTGRES_HOST", postgresZitadel.Resource.PrimaryEndpoint.Property(EndpointProperty.Host))
+    .WithEnvironment("ZITADEL_DATABASE_POSTGRES_PORT", postgresZitadel.Resource.PrimaryEndpoint.Property(EndpointProperty.Port))
+    .WithEnvironment("ZITADEL_DATABASE_POSTGRES_DATABASE", postgresZitadelDb.Resource.DatabaseName)
+    .WithEnvironment("ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME", postgresZitadel.Resource.UserNameReference)
+    .WithEnvironment("ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD", postgresZitadel.Resource.PasswordParameter)
+    .WithEnvironment("ZITADEL_DATABASE_POSTGRES_USER_USERNAME", postgresZitadel.Resource.UserNameReference)
+    .WithEnvironment("ZITADEL_DATABASE_POSTGRES_USER_PASSWORD", postgresZitadel.Resource.PasswordParameter)
+    // Admin user
+    .WithEnvironment("ZITADEL_FIRSTINSTANCE_ORG_HUMAN_USERNAME", "admin")
+    .WithEnvironment("ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORD", zitadelAdminPassword)
+    .WithEnvironment("ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORDCHANGEREQUIRED", "false")
+    // Login V2
+    .WithEnvironment("ZITADEL_DEFAULTINSTANCE_FEATURES_LOGINV2_REQUIRED", "true")
+    .WithEnvironment("ZITADEL_DEFAULTINSTANCE_FEATURES_LOGINV2_BASEURI", "https://auth.localtest.me/ui/v2/login/")
+    .WithEnvironment("ZITADEL_OIDC_DEFAULTLOGINURLV2", "https://auth.localtest.me/ui/v2/login/login?authRequest=")
+    .WithEnvironment("ZITADEL_OIDC_DEFAULTLOGOUTURLV2", "https://auth.localtest.me/ui/v2/login/logout?post_logout_redirect=")
+    .WithEnvironment("ZITADEL_SAML_DEFAULTLOGINURLV2", "https://auth.localtest.me/ui/v2/login/login?samlRequest=")
+    // PAT bootstrapping for login container
+    .WithEnvironment("ZITADEL_FIRSTINSTANCE_LOGINCLIENTPATPATH", "/zitadel/bootstrap/login-client.pat")
+    .WithEnvironment("ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_MACHINE_USERNAME", "login-client")
+    .WithEnvironment("ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_MACHINE_NAME", "Automatically Initialized IAM_LOGIN_CLIENT")
+    .WithEnvironment("ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_PAT_EXPIRATIONDATE", "2030-01-01T00:00:00Z")
+    .WithVolume("zitadel-bootstrap", "/zitadel/bootstrap")
+    .WithReference(postgresZitadelDb)
+    .WaitFor(postgresZitadelDb);
 
+var zitadelLogin = builder.AddContainer("zitadel-login", "ghcr.io/zitadel/zitadel-login", "v4.15.0")
+    .WithHttpEndpoint(targetPort: 3000, name: "http")
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithExternalHttpEndpoints()
+    .WithEnvironment("ZITADEL_API_URL", "http://zitadel-service:8080")
+    .WithEnvironment("NEXT_PUBLIC_BASE_PATH", "/ui/v2/login")
+    .WithEnvironment("ZITADEL_SERVICE_USER_TOKEN", zitadelLoginPat)
+    .WithEnvironment("CUSTOM_REQUEST_HEADERS", "Host:auth.localtest.me,X-Forwarded-Proto:https")
+    .WaitFor(zitadel);
+
+// Login V2 UI (longer prefix matches first in Gateway API)
+localtestGateway.WithRoute("auth.localtest.me", "/ui/v2/login", zitadelLogin.GetEndpoint("http"));
+// Everything else (API, console, OIDC endpoints, etc.)
 localtestGateway.WithRoute("auth.localtest.me", "/", zitadel.GetEndpoint("http"));
 
 var postgresdb = postgres.AddDatabase("postgresdb");
