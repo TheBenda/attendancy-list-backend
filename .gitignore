@@ -6,6 +6,9 @@
 # dotenv files
 .env
 
+# aspire
+/aspire/ALB.AppHost/aspire-output/
+
 # User-specific files
 *.rsuser
 *.suo

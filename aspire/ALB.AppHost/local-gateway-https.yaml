@@ -1,0 +1,122 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: local-ca
+spec:
+  ca:
+    secretName: local-ca-key-pair
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: localtest-me-cert
+  namespace: default
+spec:
+  secretName: localtest-me-tls
+  issuerRef:
+    name: local-ca
+    kind: ClusterIssuer
+  commonName: "*.localtest.me"
+  dnsNames:
+    - "*.localtest.me"
+    - ui.localtest.me
+    - api.localtest.me
+    - auth.localtest.me
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: localtest-gateway
+  namespace: default
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: "*.localtest.me"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: localtest-me-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: ui-route
+  namespace: default
+spec:
+  parentRefs:
+    - name: localtest-gateway
+      sectionName: https
+  hostnames:
+    - ui.localtest.me
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: vite-app
+          port: 443
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: GRPCRoute
+metadata:
+  name: zitadel-grpc-route
+  namespace: default
+spec:
+  parentRefs:
+    - name: localtest-gateway
+      sectionName: https
+  hostnames:
+    - auth.localtest.me
+  rules:
+    - backendRefs:
+        - name: zitadel
+          port: 8080
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: api-route
+  namespace: default
+spec:
+  parentRefs:
+    - name: localtest-gateway
+      sectionName: https
+  hostnames:
+    - api.localtest.me
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: api
+          port: 443
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: auth-route
+  namespace: default
+spec:
+  parentRefs:
+    - name: localtest-gateway
+      sectionName: https
+  hostnames:
+    - auth.localtest.me
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: zitadel
+          port: 8080
+          
