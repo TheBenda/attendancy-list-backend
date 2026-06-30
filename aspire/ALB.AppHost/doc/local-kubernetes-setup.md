@@ -37,6 +37,12 @@ helm install traefik traefik/traefik \
   --set providers.kubernetesGateway.enabled=true
 ```
 
+and in case there are auth problems while rolling out add:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v3.7/docs/content/reference/dynamic-configuration/kubernetes-gateway-rbac.yml
+```
+
 ### 3. Install cert-manager
 
 ```bash
